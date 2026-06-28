@@ -321,7 +321,7 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
   .hero { padding-bottom: 220px; }
   .hero-strip { grid-template-columns: 1fr; }
   .intro-band { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-  .evaluation-grid { grid-template-columns: 1fr; }
+  .evaluation-grid { grid-template-columns: repeat(2, 1fr); }
   .stage-display { grid-template-columns: 1fr; }
   .pipeline-tabs { grid-template-columns: repeat(2, 1fr); }
   .dashboard-body { grid-template-columns: 1fr; }
@@ -385,6 +385,7 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     align-self: start;
     width: fit-content;
   }
+  .evaluation-grid { grid-template-columns: 1fr; }
 }
 
 /* Refined report PDF preview */
