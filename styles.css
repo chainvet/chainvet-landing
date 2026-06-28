@@ -320,15 +320,51 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
   .hero, .pipeline-section, .report-section, .extension-section, .webui-section, .cicd-section, .final-cta { grid-template-columns: 1fr; }
   .hero { padding-bottom: 220px; }
   .hero-strip { grid-template-columns: 1fr; }
-  .intro-band { grid-template-columns: repeat(2, 1fr); }
+  .intro-band { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
   .evaluation-grid { grid-template-columns: 1fr; }
   .stage-display { grid-template-columns: 1fr; }
   .pipeline-tabs { grid-template-columns: repeat(2, 1fr); }
   .dashboard-body { grid-template-columns: 1fr; }
   .dash-sidebar { border-right: 0; border-bottom: 1px solid rgba(205,214,244,.1); padding-bottom: 10px; }
 }
+
+@media (max-width: 768px) {
+  .pdf-frame { display: none; }
+  .pdf-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 62px 20px;
+    color: var(--muted);
+  }
+  .pdf-fallback a {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 14px 28px;
+    border-radius: var(--pill);
+    background: var(--green);
+    color: var(--crust);
+    font-weight: 900;
+    box-shadow: 0 10px 30px rgba(166, 227, 161, 0.25);
+    transition: transform .18s;
+  }
+  .pdf-fallback a:active {
+    transform: scale(0.96);
+  }
+  .pdf-device {
+    min-height: auto;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .intro-band { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 560px) {
-  .site-header { inset: 10px; }
+  .site-header { inset: 10px 10px auto 10px; } /* Fixed full screen cover bug */
   h1 { font-size: clamp(60px, 20vw, 92px); }
   .hero-actions { flex-direction: column; align-items: stretch; }
   .panel-toolbar { grid-template-columns: repeat(2, 1fr); }
@@ -339,6 +375,16 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
   .dash-cards { grid-template-columns: repeat(2, 1fr); }
   .browser-tabs { display: none; }
   .browser-url span { font-size: 11px; }
+  .dash-finding-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    align-items: start;
+    padding: 14px;
+  }
+  .dash-finding-row .badge {
+    align-self: start;
+    width: fit-content;
+  }
 }
 
 /* Refined report PDF preview */
