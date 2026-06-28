@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chainvet - Hybrid Smart Contract Auditor</title>
+    <meta name="description" content="Chainvet is a hybrid Solidity security analyzer combining static analysis, symbolic execution, and fuzzing. The fastest analysis in the industry with AI-powered reports, VS Code extension, CI/CD integration, and Web UI.">
+    <meta property="og:title" content="Chainvet - Hybrid Smart Contract Auditor">
+    <meta property="og:description" content="Hybrid Solidity security analysis with audit-ready reports and an editor-first workflow.">
+    <meta property="og:image" content="assets/og-image-1200x630.png">
+    <meta name="theme-color" content="#1e1e2e">
+    <link rel="icon" href="assets/icon-512-rounded.png">
+    <link rel="stylesheet" href="styles.css?v=3">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Chainvet home">
+        <img src="assets/chainvet-icon.svg" alt="" class="brand-logo" height="38">
+        <img src="assets/wordmark-1200x630.png?v=2" alt="Chainvet" class="brand-wordmark" height="26">
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#pipeline">Pipeline</a>
+        <a href="#reports">Reports</a>
+        <a href="#webui">Web UI</a>
+        <a href="#extension">Extension</a>
+        <a href="#cicd">CI/CD</a>
+        <a href="#evaluation">Evaluation</a>
+      </nav>
+      <a class="nav-cta" href="https://github.com/chainvet/chainvet" aria-label="GitHub repository">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" style="display: block;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      </a>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-media" aria-hidden="true">
+          <img src="assets/github-social-1280x640.png" alt="">
+          <canvas id="hero-canvas"></canvas>
+        </div>
+        <div class="hero-content reveal">
+          <p class="eyebrow">Hybrid Solidity auditing</p>
+          <h1>Chainvet</h1>
+          <p class="hero-copy">Security tools often force auditors to choose between slow execution and overwhelming noise. Chainvet removes this friction. By combining precise static detectors with symbolic path reasoning and runtime fuzzing, it produces a unified set of verified vulnerabilities in minutes.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://github.com/chainvet/chainvet">
+              View repository
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" style="margin-left: 8px;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </a>
+            <a class="button secondary" href="#reports">Explore report output</a>
+          </div>
+        </div>
+        <aside class="hero-console reveal" aria-label="Chainvet terminal preview">
+          <div class="console-top">
+            <span></span><span></span><span></span>
+            <div class="console-tabs">
+              <button class="console-tab active" type="button" data-console="install">install</button>
+              <button class="console-tab" type="button" data-console="run">run</button>
+            </div>
+            <button class="console-copy" type="button" title="Copy to clipboard" aria-label="Copy command">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M4 4v9h9V4H4Zm8 8H5V5h7v7ZM2 2h9v1H3v8H2V2Z"/></svg>
+            </button>
+          </div>
+          <div class="console-body" id="console-install">
+            <p><em>$</em> git clone https://github.com/chainvet/chainvet</p>
+            <p><em>$</em> cd chainvet</p>
+            <p><em>$</em> cargo build --release</p>
+          </div>
+          <div class="console-body" id="console-run" style="display:none">
+            <p><em>$</em> chainvet --hybrid ./contracts</p>
+            <p><b>frontend</b> Solidity structure loaded</p>
+            <p><b>pipeline</b> detector + path + runtime evidence</p>
+            <p><b>report</b> PDF and Markdown ready</p>
+          </div>
+        </aside>
+        <div class="hero-strip" aria-label="Chainvet highlights">
+          <span><strong>Ultra fast</strong> execution speed</span>
+          <span><strong>High precision</strong> scanning and filters</span>
+          <span><strong>Auditor ready</strong> reports in seconds</span>
+        </div>
+      </section>
+
+      <section class="section pipeline-section" id="pipeline">
+        <canvas class="section-canvas" id="canvas-pipeline"></canvas>
+        <div class="intro-band reveal" aria-label="Core pillars">
+          <div><span>Static analysis</span><strong>compiler-aware detection</strong></div>
+          <div><span>Symbolic execution</span><strong>path reasoning & constraints</strong></div>
+          <div><span>Fuzzing</span><strong>runtime evidence & PoC</strong></div>
+        </div>
+        <div class="section-copy reveal">
+          <p class="eyebrow">Pipeline</p>
+          <h2>Hybrid analysis is the advantage.</h2>
+          <p>Our engine runs multiple verification layers in a single pass. When compiler configurations fail, a robust AI fallback parser continues scanning automatically to prevent workflow interruptions.</p>
+        </div>
+        <div class="pipeline-shell reveal">
+          <div class="pipeline-tabs" role="tablist" aria-label="Pipeline stages">
+            <button class="stage-tab active" data-stage="detector" type="button">Detector layer</button>
+            <button class="stage-tab" data-stage="path" type="button">Path reasoning</button>
+            <button class="stage-tab" data-stage="runtime" type="button">Runtime evidence</button>
+            <button class="stage-tab" data-stage="surface" type="button">Surface & report</button>
+          </div>
+          <div class="stage-display" aria-live="polite">
+            <div>
+              <span id="stage-kicker">01 / Detector layer</span>
+              <h3 id="stage-title">Compiler-aware structure first.</h3>
+              <p id="stage-copy">Chainvet starts with Solidity structure, compiler metadata, and fallback parsing so later checks have a consistent view of contracts and functions.</p>
+            </div>
+            <pre id="stage-code"><code>frontend: Solidity structure
+fallback: parser hints
+output: normalized contracts</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section report-section" id="reports">
+        <canvas class="section-canvas" id="canvas-reports"></canvas>
+        <div class="section-copy report-copy reveal">
+          <p class="eyebrow">Generated reports</p>
+          <h2>AI-powered, auditor-ready reports in seconds.</h2>
+          <p>Export audit logs with complete finding context, detailed exploit explanations, Solidity proof of concept runs, and step by step remediation details to prepare protocols for production.</p>
+          <div class="report-controls" aria-label="Report preview page shortcuts">
+            <button class="active" type="button" data-pdf-page="1">Cover</button>
+            <button type="button" data-pdf-page="4">Summary</button>
+            <button type="button" data-pdf-page="8">Finding</button>
+            <button type="button" data-pdf-page="10">PoC</button>
+          </div>
+        </div>
+        <div class="pdf-device reveal" aria-label="Embedded generated Chainvet PDF report">
+          <div class="pdf-device-top">
+            <span>Generated Chainvet PDF</span>
+            <a href="assets/chainvet-sample-report.pdf" target="_blank" rel="noreferrer">Open full PDF</a>
+          </div>
+          <iframe class="pdf-frame" title="Generated Chainvet sample report" src="assets/chainvet-sample-report.pdf#view=FitH&toolbar=0"></iframe>
+          <p class="pdf-fallback">If the embedded viewer is unavailable, <a href="assets/chainvet-sample-report.pdf">open the generated report PDF</a>.</p>
+        </div>
+      </section>
+
+      <section class="section webui-section" id="webui">
+        <canvas class="section-canvas" id="canvas-webui"></canvas>
+        <div class="browser-window reveal" aria-label="Chainvet Web UI dashboard preview">
+          <div class="browser-chrome">
+            <div class="browser-traffic"><span></span><span></span><span></span></div>
+            <div class="browser-tabs">
+              <button class="browser-tab active" type="button">Dashboard</button>
+              <button class="browser-tab" type="button">Findings</button>
+              <button class="browser-tab" type="button">Settings</button>
+            </div>
+            <div class="browser-url">
+              <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M12.7 3.3a1 1 0 0 0-1.4 0L8 6.6 4.7 3.3a1 1 0 0 0-1.4 1.4L6.6 8l-3.3 3.3a1 1 0 1 0 1.4 1.4L8 9.4l3.3 3.3a1 1 0 0 0 1.4-1.4L9.4 8l3.3-3.3a1 1 0 0 0 0-1.4Z"/></svg>
+              <span>chainvet.dev/dashboard/contracts</span>
+            </div>
+          </div>
+          <div class="dashboard-body">
+            <aside class="dash-sidebar">
+              <div class="dash-sidebar-title">WORKSPACE</div>
+              <div class="dash-file">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M1.5 4.5c0-.8.7-1.5 1.5-1.5h3l1.4 1.5H13c.8 0 1.5.7 1.5 1.5v6.5c0 .8-.7 1.5-1.5 1.5H3c-.8 0-1.5-.7-1.5-1.5v-8Z"/></svg>
+                contracts/
+              </div>
+              <div class="dash-file indent">
+                <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M3 1.5h6.2L13 5.3v9.2H3v-13Zm6 1.4V5.5h2.6L9 2.9Z"/></svg>
+                Vault.sol
+              </div>
+              <div class="dash-file indent active">
+                <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M3 1.5h6.2L13 5.3v9.2H3v-13Zm6 1.4V5.5h2.6L9 2.9Z"/></svg>
+                Reentrancy.sol
+              </div>
+              <div class="dash-file indent">
+                <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M3 1.5h6.2L13 5.3v9.2H3v-13Zm6 1.4V5.5h2.6L9 2.9Z"/></svg>
+                Token.sol
+              </div>
+              <div class="dash-file">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M1.5 4.5c0-.8.7-1.5 1.5-1.5h3l1.4 1.5H13c.8 0 1.5.7 1.5 1.5v6.5c0 .8-.7 1.5-1.5 1.5H3c-.8 0-1.5-.7-1.5-1.5v-8Z"/></svg>
+                interfaces/
+              </div>
+              <div class="dash-file indent">
+                <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M3 1.5h6.2L13 5.3v9.2H3v-13Zm6 1.4V5.5h2.6L9 2.9Z"/></svg>
+                IERC20.sol
+              </div>
+              <div class="dash-file indent">
+                <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M3 1.5h6.2L13 5.3v9.2H3v-13Zm6 1.4V5.5h2.6L9 2.9Z"/></svg>
+                IVault.sol
+              </div>
+            </aside>
+            <div class="dash-main">
+              <!-- View 1: Dashboard -->
+              <div class="dash-content" id="dash-view-dashboard">
+                <div class="dash-header">
+                  <h3>Security Posture</h3>
+                  <span class="dash-badge">3 contracts · hybrid · 4s</span>
+                </div>
+                <div class="dash-cards">
+                  <div class="dash-card high"><span>2</span><strong>High</strong></div>
+                  <div class="dash-card medium"><span>3</span><strong>Medium</strong></div>
+                  <div class="dash-card low"><span>5</span><strong>Low</strong></div>
+                  <div class="dash-card info"><span>1</span><strong>Info</strong></div>
+                </div>
+                <div class="dash-findings-title">Recent Findings</div>
+                <div class="dash-finding high">
+                  <span class="sev-dot"></span>
+                  <span class="finding-name">Reentrancy in withdraw()</span>
+                  <span class="finding-loc">Vault.sol:42</span>
+                </div>
+                <div class="dash-finding high">
+                  <span class="sev-dot"></span>
+                  <span class="finding-name">Unprotected Ether Withdrawal</span>
+                  <span class="finding-loc">Vault.sol:58</span>
+                </div>
+                <div class="dash-finding medium">
+                  <span class="sev-dot"></span>
+                  <span class="finding-name">Unchecked Low-Level Call</span>
+                  <span class="finding-loc">Reentrancy.sol:20</span>
+                </div>
+                <div class="dash-finding medium">
+                  <span class="sev-dot"></span>
+                  <span class="finding-name">Tx.origin Authentication</span>
+                  <span class="finding-loc">Token.sol:31</span>
+                </div>
+                <div class="dash-finding low">
+                  <span class="sev-dot"></span>
+                  <span class="finding-name">Timestamp Dependency</span>
+                  <span class="finding-loc">Vault.sol:7</span>
+                </div>
+              </div>
+
+              <!-- View 2: Findings List -->
+              <div class="dash-content" id="dash-view-findings" style="display:none">
+                <div class="dash-header">
+                  <h3>Vulnerability Log</h3>
+                  <div class="dash-filter-bar">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="high">High</button>
+                    <button class="filter-btn" data-filter="medium">Medium</button>
+                    <button class="filter-btn" data-filter="low">Low</button>
+                  </div>
+                </div>
+                <div class="dash-findings-list">
+                  <div class="dash-finding-row high" data-severity="high">
+                    <span class="badge high">High</span>
+                    <strong class="finding-title">Reentrancy in withdraw()</strong>
+                    <span class="finding-meta">Vault.sol · Line 42</span>
+                  </div>
+                  <div class="dash-finding-row high" data-severity="high">
+                    <span class="badge high">High</span>
+                    <strong class="finding-title">Unprotected Ether Withdrawal</strong>
+                    <span class="finding-meta">Vault.sol · Line 58</span>
+                  </div>
+                  <div class="dash-finding-row medium" data-severity="medium">
+                    <span class="badge medium">Medium</span>
+                    <strong class="finding-title">Unchecked Low-Level Call</strong>
+                    <span class="finding-meta">Reentrancy.sol · Line 20</span>
+                  </div>
+                  <div class="dash-finding-row medium" data-severity="medium">
+                    <span class="badge medium">Medium</span>
+                    <strong class="finding-title">Tx.origin Authentication</strong>
+                    <span class="finding-meta">Token.sol · Line 31</span>
+                  </div>
+                  <div class="dash-finding-row low" data-severity="low">
+                    <span class="badge low">Low</span>
+                    <strong class="finding-title">Timestamp Dependency</strong>
+                    <span class="finding-meta">Vault.sol · Line 7</span>
+                  </div>
+                  <div class="dash-finding-row low" data-severity="low">
+                    <span class="badge low">Low</span>
+                    <strong class="finding-title">Shadowing State Variable</strong>
+                    <span class="finding-meta">Token.sol · Line 12</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- View 3: Settings -->
+              <div class="dash-content" id="dash-view-settings" style="display:none">
+                <div class="dash-header">
+                  <h3>Analysis Settings</h3>
+                </div>
+                <div class="dash-settings-grid">
+                  <div class="setting-row">
+                    <div>
+                      <span class="setting-title">Hybrid Fuzzing Engine</span>
+                      <span class="setting-desc">Run dynamic fuzzing tests to construct proof-of-concept evidence.</span>
+                    </div>
+                    <label class="switch-control">
+                      <input type="checkbox" checked disabled>
+                      <span class="switch-slider"></span>
+                    </label>
+                  </div>
+                  <div class="setting-row">
+                    <div>
+                      <span class="setting-title">AI Review Assistant</span>
+                      <span class="setting-desc">Deduplicate and filter low-signal findings automatically using LLMs.</span>
+                    </div>
+                    <label class="switch-control">
+                      <input type="checkbox" checked disabled>
+                      <span class="switch-slider"></span>
+                    </label>
+                  </div>
+                  <div class="setting-row">
+                    <div>
+                      <span class="setting-title">Symbolic Execution Path Limit</span>
+                      <span class="setting-desc">Maximum execution depth to trace path constraints.</span>
+                    </div>
+                    <span class="setting-value">10,000 steps</span>
+                  </div>
+                  <div class="setting-row">
+                    <div>
+                      <span class="setting-title">Target Directory</span>
+                      <span class="setting-desc">Root folder to observe for changes and run security diagnostics.</span>
+                    </div>
+                    <span class="setting-value">./contracts</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-copy reveal">
+          <p class="eyebrow">Web UI</p>
+          <h2>A centralized environment for complex audits.</h2>
+          <p>Visualize repository layouts, view evidence files for reentrancy bugs, and track contract health indicators on a centralized dashboard built for auditor productivity.</p>
+          <ul class="soft-list">
+            <li>Navigate complex workspace structures visually.</li>
+            <li>Surface critical threats with severity breakdown and evidence chains.</li>
+            <li>Export PDF and Markdown reports directly from the dashboard.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section extension-section" id="extension">
+        <canvas class="section-canvas" id="canvas-extension"></canvas>
+        <div class="vscode-window realistic reveal" aria-label="Interactive VS Code extension replica">
+          <div class="vscode-titlebar">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <div class="vscode-menu">File Edit Selection View Go Run Terminal Help</div>
+            <strong>Reentrancy.sol | Chainvet</strong>
+          </div>
+          <div class="vscode-body realistic-body">
+            <aside class="activity-bar" aria-label="VS Code activity bar">
+              <button type="button" aria-label="Explorer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h9.2L19 7.8V21H5V3Zm8 1.8V9h4.2L13 4.8ZM7 5v14h10V11h-6V5H7Z"/></svg></button>
+              <button type="button" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 0 1 5.1 10.5l4 4-1.1 1.1-4-4A6.5 6.5 0 1 1 10.5 4Zm0 1.6a4.9 4.9 0 1 0 0 9.8 4.9 4.9 0 0 0 0-9.8Z"/></svg></button>
+              <button type="button" aria-label="Source Control"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5a2.5 2.5 0 1 1 3.2 2.4v2.6h1.6c2.1 0 3.7 1.6 3.7 3.7v1.9a2.5 2.5 0 1 1-1.5 0v-1.9c0-1.2-1-2.2-2.2-2.2h-1.6v4.1a2.5 2.5 0 1 1-1.5 0V7.9A2.5 2.5 0 0 1 8 5.5Zm2.5-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm-1 14a1 1 0 1 0 2 0 1 1 0 0 0-2 0Zm6.5 0a1 1 0 1 0 2 0 1 1 0 0 0-2 0Z"/></svg></button>
+              <button class="active chainvet-activity" type="button" aria-label="Chainvet"><img src="assets/chainvet-sidebar.png" alt=""></button>
+              <button type="button" aria-label="Extensions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 2.5h-3v4h-4v3h4v4h3v-4h4v-3h-4v-4ZM3 14.5v7h7v-7H3Zm5.5 5.5h-4v-4h4v4ZM14 14.5v7h7v-7h-7Zm5.5 5.5h-4v-4h4v4Z"/></svg></button>
+              <button type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13.5 2 .5 2c.5.2 1 .4 1.5.6l1.8-1 2 3.5-1.7 1.3c.1.5.2 1 .2 1.6s-.1 1.1-.2 1.6l1.7 1.3-2 3.5-1.8-1c-.5.3-1 .5-1.5.6l-.5 2h-4l-.5-2c-.5-.2-1-.4-1.5-.6l-1.8 1-2-3.5 1.7-1.3c-.1-.5-.2-1-.2-1.6s.1-1.1.2-1.6L3.7 7.1l2-3.5 1.8 1c.5-.3 1-.5 1.5-.6l.5-2h4ZM11.5 8a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/></svg></button>
+            </aside>
+            <aside class="chainvet-sidebar realistic-sidebar">
+              <div class="sidebar-section-title root-title">CHAINVET <span>···</span></div>
+              <div class="sidebar-view-title">
+                <span>SUMMARY</span>
+                <div class="sidebar-toolbar compact" aria-label="Chainvet Summary view title actions">
+                  <button type="button" title="Analyze Current File" data-action="file"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5-9-5.5Z"/></svg></button>
+                  <button type="button" title="Analyze Workspace" data-action="workspace"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.2v9.6L8.8 8 2 3.2Zm7 0v9.6L15.8 8 9 3.2Z"/></svg></button>
+                  <button type="button" title="Analyze Selected File/Folder" data-action="target"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4.5c0-.8.7-1.5 1.5-1.5h3l1.4 1.5H13c.8 0 1.5.7 1.5 1.5v6.5c0 .8-.7 1.5-1.5 1.5H3c-.8 0-1.5-.7-1.5-1.5v-8Z"/></svg></button>
+                  <button type="button" title="Generate PDF Report" data-action="pdf"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5h6.2L13 5.3v9.2H3v-13Zm6 1.4V5.5h2.6L9 2.9ZM4.5 8v4h1V10.7h.7c.9 0 1.5-.5 1.5-1.4S7.1 8 6.2 8H4.5Zm1 .8h.6c.4 0 .6.2.6.5s-.2.6-.6.6h-.6V8.8Zm3 3.2h1.4c1.2 0 1.9-.8 1.9-2s-.7-2-1.9-2H8.5v4Zm1-.8V8.8h.4c.6 0 .9.4.9 1.2s-.3 1.2-.9 1.2h-.4Z"/></svg></button>
+                  <button type="button" title="Generate Markdown Report" data-action="md"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 3h13v10h-13V3Zm1.2 1.2v7.6h10.6V4.2H2.7Zm1.2 6.1V5.7h1.2l1.3 1.7 1.3-1.7h1.2v4.6H7.6V7.5L6.4 9 5.2 7.5v2.8H3.9Zm6.8-4.6h1.2v2h.9l-1.5 1.8-1.5-1.8h.9v-2Z"/></svg></button>
+                  <button type="button" title="Refresh Findings View" data-action="refresh"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9V2h1.2v4.2H8.9V5h2.1A4.3 4.3 0 1 0 12.3 8h1.2Z"/></svg></button>
+                </div>
+              </div>
+              <!-- Summary tree (mirrors SummaryProvider from views.ts) -->
+              <div class="tree-view summary-tree" id="summary-tree">
+                <div class="tree-row" data-icon="pass" data-color="green">
+                  <svg class="tree-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/><path d="M6.5 10.3 4.7 8.5l-.9.9 2.7 2.7 5.7-5.7-.9-.9-4.8 4.8Z" fill="#1e1e2e"/></svg>
+                  <span class="tree-label" id="vscode-status">Analysis complete</span>
+                  <span class="tree-desc">3 findings</span>
+                </div>
+                <div class="tree-row" data-icon="file">
+                  <svg class="tree-icon" viewBox="0 0 16 16"><path d="M3 1.5h6.2L13 5.3v9.2H3v-13Zm6 1.4V5.5h2.6L9 2.9Z" fill="currentColor"/></svg>
+                  <span class="tree-label">Target · Reentrancy.sol</span>
+                </div>
+                <div class="tree-row" data-icon="circuit">
+                  <svg class="tree-icon" viewBox="0 0 16 16"><path d="M1 3h3v3H1V3Zm5 1h2v1H6V4ZM1 10h3v3H1v-3Zm5 1h2v1H6v-1Zm6-8h3v3h-3V3Zm-2 1h2v1h-2V4Zm2 6h3v3h-3v-3Zm-2 1h2v1h-2v-1ZM8 3h1v10H8V3Z" fill="currentColor"/></svg>
+                  <span class="tree-label">Engine · hybrid</span>
+                </div>
+                <div class="tree-row" data-icon="clock">
+                  <svg class="tree-icon" viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 12.5A5.5 5.5 0 1 1 8 2.5a5.5 5.5 0 0 1 0 11ZM8.5 4H7v5l3.5 2.1.7-1.2L8.5 8.2V4Z" fill="currentColor"/></svg>
+                  <span class="tree-label">Elapsed</span>
+                  <span class="tree-desc">4s</span>
+                </div>
+                <div class="tree-separator">Severity breakdown</div>
+                <div class="tree-row" data-icon="error" data-color="red">
+                  <svg class="tree-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/><path d="M5.5 5 8 7.5 10.5 5l.7.7L8.7 8l2.5 2.3-.7.7L8 8.5 5.5 11l-.7-.7L7.3 8 4.8 5.7 5.5 5Z" fill="#1e1e2e"/></svg>
+                  <span class="tree-label">High</span>
+                  <span class="tree-desc">1</span>
+                </div>
+                <div class="tree-row" data-icon="warn" data-color="peach">
+                  <svg class="tree-icon" viewBox="0 0 16 16"><path d="M7.56 1.47 1.05 13h12.9L7.56 1.47ZM7 6h1.2v4H7V6Zm0 5h1.2v1.2H7V11Z" fill="currentColor"/></svg>
+                  <span class="tree-label">Medium</span>
+                  <span class="tree-desc">1</span>
+                </div>
+                <div class="tree-row" data-icon="info" data-color="blue">
+                  <svg class="tree-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/><path d="M7.25 5h1.5v1.5h-1.5V5ZM7.25 7.5h1.5V11h-1.5V7.5Z" fill="#1e1e2e"/></svg>
+                  <span class="tree-label">Low</span>
+                  <span class="tree-desc">1</span>
+                </div>
+              </div>
+              <!-- Findings tree (mirrors FindingsProvider from views.ts) -->
+              <div class="sidebar-view-title lower"><span>FINDINGS</span><small>3</small></div>
+              <div class="tree-view findings-tree" id="finding-list">
+                <div class="tree-group open">
+                  <button class="tree-group-header" type="button" data-color="red">
+                    <svg class="tree-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                    <svg class="tree-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/><path d="M5.5 5 8 7.5 10.5 5l.7.7L8.7 8l2.5 2.3-.7.7L8 8.5 5.5 11l-.7-.7L7.3 8 4.8 5.7 5.5 5Z" fill="#1e1e2e"/></svg>
+                    <span class="tree-label">High severity</span>
+                    <span class="tree-desc">1</span>
+                  </button>
+                  <div class="tree-children">
+                    <button class="finding-item active" type="button" data-line="12" data-severity="high">
+                      <svg class="tree-icon finding-dot" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5" fill="currentColor"/></svg>
+                      <span class="tree-label">Reentrancy In Withdraw</span>
+                      <span class="tree-desc">Reentrancy.sol · withdraw()</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="tree-group open">
+                  <button class="tree-group-header" type="button" data-color="peach">
+                    <svg class="tree-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                    <svg class="tree-icon" viewBox="0 0 16 16"><path d="M7.56 1.47 1.05 13h12.9L7.56 1.47ZM7 6h1.2v4H7V6Zm0 5h1.2v1.2H7V11Z" fill="currentColor"/></svg>
+                    <span class="tree-label">Medium severity</span>
+                    <span class="tree-desc">1</span>
+                  </button>
+                  <div class="tree-children">
+                    <button class="finding-item" type="button" data-line="20" data-severity="medium">
+                      <svg class="tree-icon finding-dot" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5" fill="currentColor"/></svg>
+                      <span class="tree-label">Unchecked Low Level Call</span>
+                      <span class="tree-desc">Reentrancy.sol · trigger()</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="tree-group open">
+                  <button class="tree-group-header" type="button" data-color="yellow">
+                    <svg class="tree-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                    <svg class="tree-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/><path d="M7.25 5h1.5v1.5h-1.5V5ZM7.25 7.5h1.5V11h-1.5V7.5Z" fill="#1e1e2e"/></svg>
+                    <span class="tree-label">Low severity</span>
+                    <span class="tree-desc">1</span>
+                  </button>
+                  <div class="tree-children">
+                    <button class="finding-item" type="button" data-line="7" data-severity="low">
+                      <svg class="tree-icon finding-dot" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5" fill="currentColor"/></svg>
+                      <span class="tree-label">Timestamp Dependency</span>
+                      <span class="tree-desc">Reentrancy.sol · deposit()</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </aside>
+            <section class="editor-area realistic-editor">
+              <div class="editor-tabs"><button class="active" type="button">Reentrancy.sol</button><button type="button">chainvet-report.pdf</button></div>
+              <div class="breadcrumb">Benchmarks › Not-so-smart › reentrancy › Reentrancy.sol</div>
+              <div class="editor-main">
+                <div class="code-editor" id="code-editor" aria-label="Solidity editor preview">
+                  <div data-line="1"><span>1</span><code><em class="kw">pragma</em> <em class="kw">solidity</em> <em class="str">^0.4.24</em>;</code></div>
+                  <div data-line="2"><span>2</span><code></code></div>
+                  <div data-line="3"><span>3</span><code><em class="kw">contract</em> <em class="ty">Vault</em> {</code></div>
+                  <div data-line="4"><span>4</span><code>  <em class="ty">mapping</em>(<em class="ty">address</em> =&gt; <em class="ty">uint256</em>) <em class="kw">public</em> balances;</code></div>
+                  <div data-line="5"><span>5</span><code></code></div>
+                  <div data-line="6"><span>6</span><code>  <em class="kw">function</em> <em class="fn">deposit</em>() <em class="kw">external</em> <em class="kw">payable</em> {</code></div>
+                  <div data-line="7" class="warning-line"><span>7</span><code>    lastBlock = <em class="bi">block</em>.<em class="bi">timestamp</em>;</code></div>
+                  <div data-line="8"><span>8</span><code>    balances[<em class="bi">msg</em>.<em class="bi">sender</em>] += <em class="bi">msg</em>.<em class="bi">value</em>;</code></div>
+                  <div data-line="9"><span>9</span><code>  }</code></div>
+                  <div data-line="10"><span>10</span><code></code></div>
+                  <div data-line="11"><span>11</span><code>  <em class="kw">function</em> <em class="fn">withdraw</em>() <em class="kw">external</em> {</code></div>
+                  <div data-line="12" class="active-line"><span>12</span><code>    (<em class="ty">bool</em> ok,) = <em class="bi">msg</em>.<em class="bi">sender</em>.<em class="fn">call</em>.<em class="fn">value</em>(balances[<em class="bi">msg</em>.<em class="bi">sender</em>])();</code></div>
+                  <div data-line="13"><span>13</span><code>    <em class="fn">require</em>(ok);</code></div>
+                  <div data-line="14"><span>14</span><code>    balances[<em class="bi">msg</em>.<em class="bi">sender</em>] = <em class="num">0</em>;</code></div>
+                  <div data-line="15"><span>15</span><code>  }</code></div>
+                  <div data-line="16"><span>16</span><code>}</code></div>
+                  <div data-line="17"><span>17</span><code></code></div>
+                  <div data-line="18"><span>18</span><code><em class="kw">contract</em> <em class="ty">Receiver</em> {</code></div>
+                  <div data-line="19"><span>19</span><code>  <em class="kw">function</em> <em class="fn">trigger</em>(<em class="ty">address</em> target) <em class="kw">external</em> {</code></div>
+                  <div data-line="20" class="warning-line"><span>20</span><code>    target.<em class="fn">call</em>(<em class="fn">bytes4</em>(<em class="fn">keccak256</em>(<em class="str">"withdraw()"</em>)));</code></div>
+                  <div data-line="21"><span>21</span><code>  }</code></div>
+                  <div data-line="22"><span>22</span><code>}</code></div>
+                </div>
+                <div class="minimap" aria-hidden="true"><span style="top:32%"></span><span style="top:55%"></span><span style="top:82%"></span></div>
+              </div>
+              <div class="bottom-panel">
+                <div class="bottom-tabs"><button class="active" type="button">Chainvet Output</button><button type="button">Problems <strong>3</strong></button></div>
+                <pre id="vscode-output">▶ Chainvet: Analyze Current File
+$ chainvet --hybrid Reentrancy.sol --json
+  frontend   Solidity structure loaded
+  pipeline   detector + path + runtime evidence
+  surface    deduplicate &amp; suppress low-signal
+✓ 3 findings surfaced (1 high · 1 medium · 1 low)
+✓ diagnostics updated</pre>
+              </div>
+              <div class="statusbar"><span class="statusbar-chainvet"><svg viewBox="0 0 16 16"><path d="M8 1.5l6.5 3.7v5.6L8 14.5l-6.5-3.7V5.2L8 1.5Zm0 1.7L3 6.3v3.4L8 12.8l5-3.1V6.3L8 3.2Z" fill="currentColor"/></svg> Chainvet</span><span>Solidity</span><span>UTF-8</span><span>Ln 12, Col 5</span></div>
+            </section>
+          </div>
+        </div>
+        <div class="section-copy reveal">
+          <p class="eyebrow">VS Code extension</p>
+          <h2>Run the workflow where Solidity is already open.</h2>
+          <p>The extension surfaces diagnostics, finding details, target selection, and report generation directly in the sidebar.</p>
+          <ul class="soft-list">
+            <li>Analyze the active file, workspace, or a selected folder.</li>
+            <li>Jump from a finding to its source location.</li>
+            <li>Generate cached PDF or Markdown reports after analysis.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section cicd-section" id="cicd">
+        <canvas class="section-canvas" id="canvas-cicd"></canvas>
+        <div class="section-copy reveal">
+          <p class="eyebrow">CI/CD Integration</p>
+          <h2>Every commit meets the highest security standards.</h2>
+          <p>Add security audits directly to your push and pull request pipelines. Automated scans run on every check in, stopping vulnerability leaks before deployment.</p>
+          <ul class="soft-list">
+            <li>Zero-config GitHub Action and GitLab CI template.</li>
+            <li>Fails the build on high-severity findings.</li>
+            <li>Auto-uploads PDF report as pipeline artifact.</li>
+          </ul>
+        </div>
+        <div class="cicd-visual reveal">
+          <div class="workflow-window">
+            <div class="wf-chrome">
+              <div class="wf-traffic"><span></span><span></span><span></span></div>
+              <strong>Security Audit · main</strong>
+              <span class="wf-badge-pass">✓ passed</span>
+            </div>
+            <div class="wf-body">
+              <div class="wf-run-header">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0Zm3.8 6.4-4.2 4.2a.8.8 0 0 1-1.1 0L4.2 8.3a.8.8 0 1 1 1.1-1.1L6.7 8.6l3.6-3.6a.8.8 0 1 1 1.1 1.1l.4.3Z"/></svg>
+                <div>
+                  <strong>Security Audit</strong>
+                  <span>on push to main · completed in 54s</span>
+                </div>
+              </div>
+              <div class="wf-steps">
+                <div class="wf-step"><span class="wf-check">✓</span><span>Checkout repository</span><span class="wf-time">2s</span></div>
+                <div class="wf-connector"></div>
+                <div class="wf-step"><span class="wf-check">✓</span><span>Setup environment</span><span class="wf-time">12s</span></div>
+                <div class="wf-connector"></div>
+                <div class="wf-step highlight"><span class="wf-check">✓</span><span>chainvet --hybrid ./contracts</span><span class="wf-time">4s</span></div>
+                <div class="wf-connector"></div>
+                <div class="wf-step"><span class="wf-check">✓</span><span>Generate PDF report</span><span class="wf-time">1s</span></div>
+                <div class="wf-connector"></div>
+                <div class="wf-step"><span class="wf-check">✓</span><span>Upload artifacts</span><span class="wf-time">3s</span></div>
+              </div>
+            </div>
+          </div>
+          <pre class="workflow-yaml"><code><em class="wf-comment"># .github/workflows/audit.yml</em>
+<em class="wf-key">name</em>: Security Audit
+<em class="wf-key">on</em>: [push, pull_request]
+
+<em class="wf-key">jobs</em>:
+  <em class="wf-key">chainvet</em>:
+    <em class="wf-key">runs-on</em>: ubuntu-latest
+    <em class="wf-key">steps</em>:
+      - <em class="wf-key">uses</em>: actions/checkout@v4
+      - <em class="wf-key">uses</em>: chainvet/action@v1
+        <em class="wf-key">with</em>:
+          <em class="wf-key">mode</em>: hybrid
+          <em class="wf-key">report</em>: pdf
+          <em class="wf-key">fail-on</em>: high</code></pre>
+        </div>
+      </section>
+
+      <section class="section evaluation-section" id="evaluation">
+        <canvas class="section-canvas" id="canvas-evaluation"></canvas>
+        <div class="section-copy compact reveal">
+          <p class="eyebrow">Evaluation</p>
+          <h2>Maximizing precision and recall.</h2>
+          <p>Evaluated across leading smart contract datasets, our engine balances high threat coverage with signal accuracy to minimize time spent filtering false warnings.</p>
+        </div>
+        <div class="evaluation-grid reveal">
+          <article><span>01</span><strong>SmartBugs Curated</strong><p>Official labels, family-level scoring, and line-overlap checks.</p></article>
+          <article><span>02</span><strong>Not-so-smart</strong><p>Manual review against classic vulnerable Solidity patterns.</p></article>
+          <article><span>03</span><strong>Report review</strong><p>Optional AI filtering compared against deterministic analyzer output.</p></article>
+        </div>
+      </section>
+
+      <section class="final-cta reveal">
+        <img src="assets/lockup-horizontal-1200x630.png?v=2" alt="Chainvet wordmark">
+        <div><p class="eyebrow">Hybrid audit workflow</p><h2>Install Chainvet and generate your first report.</h2></div>
+        <a class="button primary" href="https://github.com/chainvet/chainvet" aria-label="Open GitHub">
+          Open
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" style="margin-left: 8px;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Chainvet: Hybrid smart contract security analysis</span>
+      <a href="mailto:hello@chainvet.dev">hello@chainvet.dev</a>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>

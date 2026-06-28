@@ -1,0 +1,25 @@
+# OS metadata
+.DS_Store
+Thumbs.db
+.directory
+
+# IDE and Editor configs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Node / Logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Scratch / Temp
+scratch/
+tmp/
+temp/
