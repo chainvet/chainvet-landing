@@ -881,61 +881,70 @@ function getLayoutCoords(element, parent) {
   return { x, y };
 }
 
-/* 1. Pipeline Canvas: Hybrid Merger (Static + Symbolic + Fuzzing -> Synthesis) */
+/* 1. Pipeline Canvas: Static Analysis + Symbolic Execution + Fuzzing -> Hybrid */
 function initPipelineCanvas(state) {
-  state.data = []; // Will hold active particles
-  
-  const bubbles = document.querySelectorAll('.intro-band > div');
-  const h2 = document.querySelector('.pipeline-section h2');
-  
-  // Default fallback coords if elements aren't ready
-  const defaultSources = [
-    { x: state.width * 0.2, y: state.height * 0.15, color: '#94e2d5', label: 'Static' },
-    { x: state.width * 0.5, y: state.height * 0.15, color: '#89b4fa', label: 'Symbolic' },
-    { x: state.width * 0.8, y: state.height * 0.15, color: '#fab387', label: 'Fuzzing' }
+  state.data = [];
+  state.startedAt = performance.now();
+
+  const techniqueCards = document.querySelectorAll('.pipeline-summary > div');
+  const heading = document.querySelector('.pipeline-section h2');
+  const shell = document.querySelector('.pipeline-shell');
+
+  const techniques = [
+    { label: 'SA', name: 'Static Analysis', color: '#94e2d5' },
+    { label: 'SE', name: 'Symbolic Execution', color: '#89b4fa' },
+    { label: 'FZ', name: 'Fuzzing', color: '#fab387' }
   ];
-  const defaultDest = { x: state.width * 0.25, y: state.height * 0.45, color: '#a6e3a1', label: 'Synthesis', pulse: 0 };
-  
+
   state.sources = [];
-  const colors = ['#94e2d5', '#89b4fa', '#fab387'];
-  
-  if (bubbles.length === 3) {
-    bubbles.forEach((b, idx) => {
-      const coords = getLayoutCoords(b, state.parent);
+  if (techniqueCards.length === 3) {
+    techniqueCards.forEach((card, idx) => {
+      const coords = getLayoutCoords(card, state.parent);
       state.sources.push({
-        x: coords.x + b.offsetWidth / 2,
-        y: coords.y + b.offsetHeight / 2,
-        color: colors[idx]
+        ...techniques[idx],
+        x: coords.x + card.offsetWidth / 2,
+        y: coords.y + card.offsetHeight / 2,
+        phase: idx * 1.9
       });
     });
   } else {
-    state.sources = defaultSources;
+    state.sources = techniques.map((technique, idx) => ({
+      ...technique,
+      x: state.width * (0.22 + idx * 0.28),
+      y: state.height * 0.18,
+      phase: idx * 1.9
+    }));
   }
-  
-  if (h2) {
-    const coords = getLayoutCoords(h2, state.parent);
-    // Position exactly 24px to the left of the "Hybrid" header text start, perfectly centered vertically
+
+  if (heading && shell) {
+    const headingCoords = getLayoutCoords(heading, state.parent);
+    const shellCoords = getLayoutCoords(shell, state.parent);
     state.dest = {
-      x: coords.x - 24,
-      y: coords.y + h2.offsetHeight / 2 + 1,
+      x: Math.max(headingCoords.x + 220, Math.min(shellCoords.x - 46, state.width * 0.52)),
+      y: headingCoords.y + Math.min(heading.offsetHeight + 92, 185),
       color: '#a6e3a1',
+      label: 'HYBRID',
       pulse: 0
     };
   } else {
-    state.dest = defaultDest;
+    state.dest = {
+      x: state.width * 0.5,
+      y: state.height * 0.45,
+      color: '#a6e3a1',
+      label: 'HYBRID',
+      pulse: 0
+    };
   }
 
-  // Generate 40 particles
-  for (let i = 0; i < 40; i++) {
-    const srcIdx = Math.floor(Math.random() * state.sources.length);
+  for (let i = 0; i < 66; i++) {
+    const srcIndex = i % state.sources.length;
     state.data.push({
-      srcIndex: srcIdx,
+      srcIndex,
       progress: Math.random(),
-      speed: 0.003 + Math.random() * 0.005,
-      size: 2.2 + Math.random() * 2.2,
-      // Random control point offsets for curved organic paths
-      ctrlX: (Math.random() - 0.5) * 140,
-      ctrlY: 80 + Math.random() * 120
+      speed: 0.0024 + Math.random() * 0.0038,
+      size: 1.8 + Math.random() * 2.8,
+      drift: (Math.random() - 0.5) * 34,
+      delay: Math.random() * Math.PI * 2
     });
   }
 }
@@ -944,91 +953,194 @@ function drawPipelineCanvas(state) {
   const { ctx, width, height, mouse, data, sources, dest } = state;
   if (!sources || sources.length === 0 || !dest) return;
 
-  // 1. Draw connecting guide lines behind particles
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = 'rgba(108, 112, 134, 0.14)';
+  const now = performance.now();
+  const elapsed = (now - (state.startedAt || now)) / 1000;
+
+  function pathControls(src) {
+    const horizontalBend = (dest.x - src.x) * 0.34;
+    const verticalBend = Math.max(120, Math.abs(dest.y - src.y) * 0.72);
+    return {
+      cp1x: src.x + horizontalBend * 0.28,
+      cp1y: src.y + verticalBend,
+      cp2x: dest.x - horizontalBend * 0.55,
+      cp2y: dest.y - verticalBend * 0.42
+    };
+  }
+
+  function pointOnPath(src, t, drift = 0) {
+    const { cp1x, cp1y, cp2x, cp2y } = pathControls(src);
+    const mt = 1 - t;
+    const px = mt * mt * mt * src.x + 3 * mt * mt * t * cp1x + 3 * mt * t * t * cp2x + t * t * t * dest.x;
+    const py = mt * mt * mt * src.y + 3 * mt * mt * t * cp1y + 3 * mt * t * t * cp2y + t * t * t * dest.y;
+    const wobble = Math.sin(t * Math.PI * 2 + src.phase + elapsed * 1.2) * drift;
+    return { x: px + wobble, y: py };
+  }
+
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  // Soft merge aura behind the hybrid node.
+  const aura = ctx.createRadialGradient(dest.x, dest.y, 4, dest.x, dest.y, 145);
+  aura.addColorStop(0, 'rgba(166, 227, 161, 0.22)');
+  aura.addColorStop(0.38, 'rgba(148, 226, 213, 0.09)');
+  aura.addColorStop(1, 'rgba(166, 227, 161, 0)');
+  ctx.fillStyle = aura;
+  ctx.beginPath();
+  ctx.arc(dest.x, dest.y, 145, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Curved rails from each technique to the hybrid node.
   sources.forEach((src) => {
+    const { cp1x, cp1y, cp2x, cp2y } = pathControls(src);
+
+    const rail = ctx.createLinearGradient(src.x, src.y, dest.x, dest.y);
+    rail.addColorStop(0, `${src.color}80`);
+    rail.addColorStop(0.72, 'rgba(205, 214, 244, 0.18)');
+    rail.addColorStop(1, 'rgba(166, 227, 161, 0.60)');
+
     ctx.beginPath();
     ctx.moveTo(src.x, src.y);
-    // Draw Bezier curves connecting bubbles down to the Synthesis node
-    ctx.bezierCurveTo(
-      src.x, src.y + 120,
-      dest.x, dest.y - 120,
-      dest.x, dest.y
-    );
+    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, dest.x, dest.y);
+    ctx.strokeStyle = rail;
+    ctx.lineWidth = 2.2;
+    ctx.globalAlpha = 0.72;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(src.x, src.y);
+    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, dest.x, dest.y);
+    ctx.strokeStyle = src.color;
+    ctx.lineWidth = 8;
+    ctx.globalAlpha = 0.055;
     ctx.stroke();
   });
 
-  // 2. Draw source hubs (concentric rings inside the bubbles)
-  sources.forEach((src) => {
-    ctx.beginPath();
-    ctx.arc(src.x, src.y, 7, 0, Math.PI * 2);
-    ctx.fillStyle = src.color;
-    ctx.globalAlpha = 0.48;
-    ctx.fill();
-    ctx.globalAlpha = 1.0;
-  });
-
-  // Dest hub pulse effect
-  dest.pulse -= 0.05;
-  if (dest.pulse < 0) dest.pulse = 0;
-  const destRadius = 8 + Math.sin(dest.pulse) * 6;
-
-  // Pulsing Synthesis node beside the "Hybrid" header
-  ctx.beginPath();
-  ctx.arc(dest.x, dest.y, destRadius, 0, Math.PI * 2);
-  ctx.fillStyle = dest.color;
-  ctx.globalAlpha = 0.45 + Math.sin(dest.pulse) * 0.45;
-  ctx.shadowBlur = 12;
-  ctx.shadowColor = dest.color;
-  ctx.fill();
-  ctx.shadowBlur = 0;
-  ctx.globalAlpha = 1.0;
-
-  // 3. Update and draw particles
+  // Moving evidence particles with short trails.
   data.forEach((p) => {
+    const src = sources[p.srcIndex];
+    if (!src) return;
+
     p.progress += p.speed;
     if (p.progress > 1) {
       p.progress = 0;
-      dest.pulse = Math.PI * 2; // Trigger pulse when merging into destination node
+      dest.pulse = Math.PI * 2;
     }
 
-    const src = sources[p.srcIndex];
-    if (!src) return;
-    
     const t = p.progress;
-    
-    // Calculate Bezier coordinates (BezierCurveTo path matching guide lines)
-    const cp1x = src.x;
-    const cp1y = src.y + 120;
-    const cp2x = dest.x;
-    const cp2y = dest.y - 120;
+    const head = pointOnPath(src, t, p.drift);
+    const tail = pointOnPath(src, Math.max(0, t - 0.055), p.drift * 0.65);
 
-    // Cubic Bezier curve formula
-    const mt = 1 - t;
-    let px = mt * mt * mt * src.x + 3 * mt * mt * t * cp1x + 3 * mt * t * t * cp2x + t * t * t * dest.x;
-    let py = mt * mt * mt * src.y + 3 * mt * mt * t * cp1y + 3 * mt * t * t * cp2y + t * t * t * dest.y;
-
-    // Mouse magnetic warp
     if (mouse.active) {
-      const dx = mouse.x - px;
-      const dy = mouse.y - py;
+      const dx = mouse.x - head.x;
+      const dy = mouse.y - head.y;
       const dist = Math.hypot(dx, dy);
-      if (dist < 160) {
-        const pull = (1 - dist / 160) * 0.4;
-        px += (mouse.x - px) * pull;
-        py += (mouse.y - py) * pull;
+      if (dist < 165) {
+        const pull = (1 - dist / 165) * 0.28;
+        head.x += dx * pull;
+        head.y += dy * pull;
       }
     }
 
-    // Draw particle
+    const trail = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+    trail.addColorStop(0, `${src.color}00`);
+    trail.addColorStop(1, `${src.color}bb`);
     ctx.beginPath();
-    ctx.arc(px, py, p.size, 0, Math.PI * 2);
+    ctx.moveTo(tail.x, tail.y);
+    ctx.lineTo(head.x, head.y);
+    ctx.strokeStyle = trail;
+    ctx.lineWidth = Math.max(1, p.size * 0.9);
+    ctx.globalAlpha = 0.8;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(head.x, head.y, p.size, 0, Math.PI * 2);
     ctx.fillStyle = src.color;
-    ctx.globalAlpha = 0.85;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = src.color;
+    ctx.globalAlpha = 0.88;
     ctx.fill();
-    ctx.globalAlpha = 1.0;
+    ctx.shadowBlur = 0;
   });
+
+  // Source technique nodes.
+  sources.forEach((src) => {
+    const pulse = 1 + Math.sin(elapsed * 2.1 + src.phase) * 0.08;
+    const radius = 18 * pulse;
+
+    ctx.globalAlpha = 0.16;
+    ctx.strokeStyle = src.color;
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    ctx.arc(src.x, src.y, radius + 13, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = 'rgba(17, 17, 27, 0.86)';
+    ctx.strokeStyle = src.color;
+    ctx.lineWidth = 1.5;
+    ctx.shadowBlur = 14;
+    ctx.shadowColor = src.color;
+    ctx.beginPath();
+    ctx.arc(src.x, src.y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = src.color;
+    ctx.font = '800 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(src.label, src.x, src.y + 0.5);
+
+    ctx.fillStyle = 'rgba(205, 214, 244, 0.78)';
+    ctx.font = '700 11px Inter, system-ui, sans-serif';
+    ctx.fillText(src.name, src.x, src.y + 38);
+  });
+
+  // Hybrid merge node.
+  dest.pulse -= 0.045;
+  if (dest.pulse < 0) dest.pulse = 0;
+  const burst = dest.pulse > 0 ? Math.sin(dest.pulse) : 0;
+  const hybridRadius = 25 + Math.max(0, burst) * 4;
+
+  for (let i = 0; i < 3; i++) {
+    ctx.globalAlpha = 0.18 - i * 0.045;
+    ctx.strokeStyle = dest.color;
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+    ctx.arc(dest.x, dest.y, hybridRadius + 16 + i * 15 + Math.sin(elapsed * 1.4 + i) * 3, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  const core = ctx.createRadialGradient(dest.x - 8, dest.y - 10, 4, dest.x, dest.y, hybridRadius + 12);
+  core.addColorStop(0, 'rgba(205, 214, 244, 0.95)');
+  core.addColorStop(0.38, 'rgba(166, 227, 161, 0.86)');
+  core.addColorStop(1, 'rgba(148, 226, 213, 0.36)');
+
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = core;
+  ctx.strokeStyle = 'rgba(166, 227, 161, 0.78)';
+  ctx.lineWidth = 1.6;
+  ctx.shadowBlur = 24;
+  ctx.shadowColor = dest.color;
+  ctx.beginPath();
+  ctx.arc(dest.x, dest.y, hybridRadius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = 'rgba(17, 17, 27, 0.94)';
+  ctx.font = '900 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(dest.label, dest.x, dest.y + 0.5);
+
+  ctx.fillStyle = 'rgba(166, 227, 161, 0.86)';
+  ctx.font = '800 12px Inter, system-ui, sans-serif';
+  ctx.fillText('merged evidence', dest.x, dest.y + hybridRadius + 26);
+
+  ctx.restore();
 }
 
 /* 2. Reports Canvas: Page Compilation Particles */
