@@ -25,7 +25,7 @@
         <img src="assets/Wordmark.svg" alt="Chainvet" class="brand-wordmark" height="26">
       </a>
       <nav class="nav-links" aria-label="Main navigation">
-        <a href="#interfaces">Workflows</a>
+        <a href="#interfaces">Ecosystem</a>
         <a href="#comparison">Comparison</a>
         <a href="#pipeline">Pipeline</a>
         <a href="#cicd">CI/CD</a>
@@ -40,6 +40,17 @@
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" style="display: block;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
       </a>
     </header>
+
+    <div class="mobile-advisory" id="mobile-advisory" role="alertdialog" aria-modal="false" aria-labelledby="mobile-advisory-title" aria-describedby="mobile-advisory-copy" hidden>
+      <div class="mobile-advisory-card">
+        <img src="assets/chainvet-logo.svg" alt="" aria-hidden="true">
+        <div>
+          <strong id="mobile-advisory-title">Best viewed on desktop</strong>
+          <p id="mobile-advisory-copy">This page works on mobile, but the product mockups and report preview are easier to inspect on a desktop screen.</p>
+        </div>
+        <button type="button" data-mobile-advisory-close aria-label="Dismiss mobile viewing notice">Continue</button>
+      </div>
+    </div>
 
     <main id="main">
       <section class="hero" id="top">
@@ -91,11 +102,11 @@
         <canvas class="section-canvas" id="canvas-interfaces"></canvas>
         
         <div class="section-copy compact reveal">
-          <p class="eyebrow">Workflows</p>
-          <h2>Three Ways to Run Chainvet</h2>
-          <p>Whether you prefer the local Web UI, your code editor, or lightweight terminal automation, Chainvet fits into the workflow you already use.</p>
+          <p class="eyebrow">Ecosystem</p>
+          <h2>Chainvet Ecosystem</h2>
+          <p>Use Chainvet from the local Web UI, the VS Code extension, or the CLI while keeping the same hybrid analysis and report workflow.</p>
           
-          <div class="interface-tabs" role="tablist" aria-label="Tool interfaces">
+          <div class="interface-tabs" role="tablist" aria-label="Chainvet ecosystem surfaces">
             <button class="interface-tab active" data-tab="webui" role="tab" aria-selected="true" type="button" aria-label="Web UI" title="Web UI">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.75A2.75 2.75 0 0 1 5.75 3h12.5A2.75 2.75 0 0 1 21 5.75v12.5A2.75 2.75 0 0 1 18.25 21H5.75A2.75 2.75 0 0 1 3 18.25V5.75Zm2 2.75h14V5.75a.75.75 0 0 0-.75-.75H5.75a.75.75 0 0 0-.75.75V8.5Zm0 2v7.75c0 .41.34.75.75.75h12.5c.41 0 .75-.34.75-.75V10.5H5Zm2.2-4.13a.85.85 0 1 1 1.7 0 .85.85 0 0 1-1.7 0Zm3 0a.85.85 0 1 1 1.7 0 .85.85 0 0 1-1.7 0Zm3.2 6.13h3.9v1.6h-3.9v-1.6Zm-6.7 0h5.1v1.6H6.7v-1.6Zm0 3.25h8.7v1.6H6.7v-1.6Z"/></svg>
               <span class="sr-only">Web UI</span>
@@ -109,6 +120,73 @@
               <span class="sr-only">CLI</span>
             </button>
           </div>
+        </div>
+
+        <div class="mobile-ecosystem-stack reveal" aria-label="Chainvet ecosystem mobile summary">
+          <article class="mobile-surface-card web-surface">
+            <div class="mobile-surface-head">
+              <span class="mobile-surface-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3 5.75A2.75 2.75 0 0 1 5.75 3h12.5A2.75 2.75 0 0 1 21 5.75v12.5A2.75 2.75 0 0 1 18.25 21H5.75A2.75 2.75 0 0 1 3 18.25V5.75Zm2 2.75h14V5.75a.75.75 0 0 0-.75-.75H5.75a.75.75 0 0 0-.75.75V8.5Zm0 2v7.75c0 .41.34.75.75.75h12.5c.41 0 .75-.34.75-.75V10.5H5Z"/></svg>
+              </span>
+              <div>
+                <strong>Web UI</strong>
+                <p>Run, triage, and export reports from a local audit workspace.</p>
+              </div>
+            </div>
+            <div class="mobile-mini-screen web-mini" aria-hidden="true">
+              <div class="mini-runline"><span>Hybrid analysis</span><b>Complete</b></div>
+              <div class="mini-findings">
+                <span class="high">High</span>
+                <strong>Reentrancy in withdraw()</strong>
+                <small>runtime evidence + source span</small>
+              </div>
+              <div class="mini-actions"><span>PDF</span><span>MD</span><span>Details</span></div>
+            </div>
+          </article>
+
+          <article class="mobile-surface-card vscode-surface">
+            <div class="mobile-surface-head">
+              <span class="mobile-surface-icon" aria-hidden="true">
+                <svg class="mobile-icon-outline" viewBox="0 0 24 24"><path d="M4.75 4.5h14.5A2.25 2.25 0 0 1 21.5 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25H4.75A2.25 2.25 0 0 1 2.5 17.25V6.75A2.25 2.25 0 0 1 4.75 4.5Z"/><path d="M7.5 4.75v14.5"/><path d="m12 9-2.5 3 2.5 3"/><path d="m15 9 2.5 3-2.5 3"/></svg>
+              </span>
+              <div>
+                <strong>VS Code</strong>
+                <p>Inspect findings next to the Solidity file you are already editing.</p>
+              </div>
+            </div>
+            <div class="mobile-mini-screen vscode-mini" aria-hidden="true">
+              <div class="mini-vscode-top"><span></span><span></span><span></span><b>Chainvet</b></div>
+              <div class="mini-vscode-body">
+                <div class="mini-vscode-list">
+                  <span class="active">Reentrancy</span>
+                  <span>Unchecked call</span>
+                  <span>Timestamp</span>
+                </div>
+                <div class="mini-vscode-detail">
+                  <b>High severity</b>
+                  <small>Reentrancy.sol:12</small>
+                  <i>Open finding detail</i>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="mobile-surface-card cli-surface">
+            <div class="mobile-surface-head">
+              <span class="mobile-surface-icon" aria-hidden="true">
+                <svg class="mobile-icon-outline" viewBox="0 0 24 24"><path d="M4.75 5h14.5A2.75 2.75 0 0 1 22 7.75v8.5A2.75 2.75 0 0 1 19.25 19H4.75A2.75 2.75 0 0 1 2 16.25v-8.5A2.75 2.75 0 0 1 4.75 5Z"/><path d="m7 10 3 2-3 2"/><path d="M12.5 15h4.5"/></svg>
+              </span>
+              <div>
+                <strong>CLI</strong>
+                <p>Use the same hybrid engine in scripts, CI jobs, and repeatable audits.</p>
+              </div>
+            </div>
+            <div class="mobile-mini-screen cli-mini" aria-hidden="true">
+              <code><span>$</span> chainvet scan ./contracts</code>
+              <code><b>pipeline</b> detector + path + runtime</code>
+              <code><b>report</b> chainvet-hybrid-report.pdf</code>
+            </div>
+          </article>
         </div>
 
         <div class="interfaces-slider reveal">
@@ -448,7 +526,7 @@ $ chainvet --hybrid Reentrancy.sol --json
             <button class="comparison-tab active" data-tab="hybrid" role="tab" aria-selected="true" type="button"><span>01</span>Hybrid Evidence</button>
             <button class="comparison-tab" data-tab="fallback" role="tab" aria-selected="false" type="button"><span>02</span>Parser Recovery</button>
             <button class="comparison-tab" data-tab="performance" role="tab" aria-selected="false" type="button"><span>03</span>Rust Workflow</button>
-            <button class="comparison-tab" data-tab="taxonomy" role="tab" aria-selected="false" type="button"><span>04</span>Finding Taxonomy</button>
+            <button class="comparison-tab" data-tab="taxonomy" role="tab" aria-selected="false" type="button"><span>04</span>Audit-Ready Findings</button>
           </div>
         </div>
 
@@ -541,33 +619,37 @@ analysis continues</pre>
           </div>
 
           <div class="comparison-slide" id="comp-slide-taxonomy" role="tabpanel" style="display: none;">
-            <div class="comp-visual comp-panel taxonomy-panel" aria-label="Per vulnerability category detection rate visual">
-              <div class="comp-panel-top"><span>category recall</span><strong>Detection rate across 3 datasets</strong></div>
-              <div class="recall-board" aria-label="Chainvet per vulnerability category detection rate">
-                <div class="recall-hero">
-                  <span>Broad category coverage</span>
-                  <strong>4 / 7</strong>
-                  <small>categories at 90%+ detection rate in this comparison</small>
+            <div class="comp-visual comp-panel finding-model-panel" aria-label="Audit-ready finding model visual">
+              <div class="comp-panel-top"><span>finding model</span><strong>From raw alerts to report-ready evidence</strong></div>
+              <div class="finding-model" aria-label="Structured Chainvet finding card">
+                <div class="signal-stack" aria-hidden="true">
+                  <div class="signal-card muted"><b>static</b><span>unchecked call</span></div>
+                  <div class="signal-card hot"><b>runtime</b><span>callback trace</span></div>
+                  <div class="signal-card cool"><b>solver</b><span>path condition</span></div>
                 </div>
-                <div class="recall-grid">
-                  <div class="recall-row"><b>Access control</b><span><i style="--w: 99%"></i></span><em>99%</em></div>
-                  <div class="recall-row"><b>Arithmetic</b><span><i style="--w: 91%"></i></span><em>91%</em></div>
-                  <div class="recall-row"><b>Block manipulation</b><span><i style="--w: 90%"></i></span><em>90%</em></div>
-                  <div class="recall-row"><b>Reentrancy</b><span><i style="--w: 96%"></i></span><em>96%</em></div>
-                  <div class="recall-row mid"><b>DoS</b><span><i style="--w: 39%"></i></span><em>39%</em></div>
-                  <div class="recall-row zero"><b>Cryptographic</b><span><i style="--w: 0%"></i></span><em>0%</em></div>
-                  <div class="recall-row zero"><b>Storage &amp; memory</b><span><i style="--w: 0%"></i></span><em>0%</em></div>
-                </div>
-                <p class="recall-note">Values shown for Chainvet from the per-category detection-rate comparison.</p>
+                <div class="finding-merge" aria-hidden="true"><span></span></div>
+                <article class="audit-finding-card">
+                  <header>
+                    <div><span>High severity</span><strong>Reentrancy in withdraw()</strong></div>
+                    <b>report-ready</b>
+                  </header>
+                  <div class="finding-meta-grid">
+                    <span>Evidence</span><strong>runtime trace + source span</strong>
+                    <span>PoC</span><strong>generated exploit path</strong>
+                    <span>Remediation</span><strong>checks-effects-interactions</strong>
+                  </div>
+                  <pre>msg.sender.call.value(balance)();
+balances[msg.sender] = 0;</pre>
+                </article>
               </div>
             </div>
             <div class="section-copy slide-text comparison-copy">
-              <p class="eyebrow">Finding Taxonomy</p>
-              <h3>High Recall Across Critical Families</h3>
-              <p>Chainvet detects major vulnerability families at high rates (access control, arithmetic, block manipulation, and reentrancy), supporting taxonomy parity better than a generic detector count.</p>
+              <p class="eyebrow">Audit-ready findings</p>
+              <h3>Findings should be useful after detection.</h3>
+              <p>A scanner is only useful if its output can be triaged, reviewed, and turned into a report. Chainvet’s comparison point here is not just category breadth; it is the way raw signals are normalized into evidence-backed findings.</p>
               <div class="compare-block refined">
-                <div class="market-side">❌ <b>Narrow Traditional Coverage:</b> Most scanners show strong recall in only one or two families, leaving other categories exposed.</div>
-                <div class="chainvet-side">✓ <b>Broad Taxonomy Recall:</b> Achieves 90%+ recall across 4 of the 7 major vulnerability families under test.</div>
+                <div class="market-side"><b>Raw alert output</b><span>Warnings can be technically correct but still require manual effort to group, explain, reproduce, and remediate.</span></div>
+                <div class="chainvet-side"><b>Chainvet direction</b><span>Each surfaced finding is shaped around severity, evidence, source location, exploit explanation, PoC context, and remediation guidance.</span></div>
               </div>
             </div>
           </div>
