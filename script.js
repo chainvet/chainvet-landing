@@ -500,31 +500,31 @@ document.querySelectorAll('.reveal').forEach((node) => {
 const stages = {
   detector: {
     kicker: '01 / Frontend & detectors',
-    title: 'Build the contract view before judging it.',
-    copy: 'Chainvet prefers solc output for structure and source spans, then uses fallback parsing when compiler resolution fails so detectors still receive a normalized contract model.',
-    code: 'frontend  solc ast loaded\nfallback  standby parser available\ndetector  candidates mapped to source',
-    facts: ['solc AST when available', 'fallback parser coverage', 'rule candidates with source spans']
+    title: 'Load the project into a usable contract model.',
+    copy: 'The scan begins by resolving Solidity structure, source spans, functions, and call sites. Compiler output is preferred; fallback parsing fills enough structure to keep analysis moving when solc is unavailable.',
+    code: 'parse     source model ready\nmap       functions and call sites\nqueue     detector candidates',
+    facts: ['source spans and function map', 'imports and pragma context', 'detector candidates queued']
   },
   path: {
     kicker: '02 / Symbolic reasoning',
-    title: 'Follow suspicious control flow, not every branch.',
-    copy: 'Static candidates seed deeper checks. The symbolic layer reasons about branch constraints, state updates, and external-call ordering around security-sensitive functions.',
-    code: 'seed      reentrancy candidate\nconstraints  balance > 0 && call succeeds\npath      external call before state update',
-    facts: ['constraint-aware path checks', 'state transition context', 'feasibility signal for triage']
+    title: 'Escalate only the paths that need deeper checks.',
+    copy: 'Static candidates seed targeted symbolic work around branch constraints, state updates, value movement, and external-call ordering.',
+    code: 'select    suspicious function\nsolve     branch and value constraints\nmark      feasible path context',
+    facts: ['targeted path exploration', 'state transition context', 'feasibility notes for triage']
   },
   runtime: {
     kicker: '03 / Fuzz evidence',
-    title: 'Turn possible issues into observed behavior.',
-    copy: 'The fuzzing layer exercises generated call sequences and records traces that can support findings such as reentrant callbacks, unchecked external calls, and value-flow edge cases.',
-    code: 'sequence  deposit -> withdraw -> callback\ntrace     external call reached\nevidence  storage update after transfer',
-    facts: ['runtime traces', 'coverage and corpus context', 'PoC-oriented evidence']
+    title: 'Exercise behavior with generated call sequences.',
+    copy: 'The fuzzing layer runs concrete transactions around the selected surfaces and records coverage, crashes, callbacks, failed calls, and value-flow behavior.',
+    code: 'mutate    call sequence corpus\nexecute   transaction harness\nrecord    coverage and traces',
+    facts: ['call sequence corpus', 'coverage and trace output', 'runtime signal for risky flows']
   },
   surface: {
-    kicker: '04 / Surface & report',
-    title: 'Ship one clean finding set.',
-    copy: 'Chainvet correlates overlapping signals, suppresses low-signal duplicates, assigns severity and tier context, then exports the same result set to the UI, extension, CLI, Markdown, and PDF reports.',
-    code: 'merge     detector + path + runtime\nfilter    duplicate / low-signal output\nexport    cli table + md/pdf report',
-    facts: ['deduplicated findings', 'severity and confidence context', 'report-ready PoC and remediation']
+    kicker: '04 / Correlate & publish',
+    title: 'Hand every interface the same normalized result.',
+    copy: 'Chainvet groups overlapping signals, applies severity and tier metadata, then exposes one consistent output to the Web UI, VS Code extension, CLI, Markdown, and PDF report paths.',
+    code: 'group     by file/function/kind\nannotate  severity and tier\npublish   ui + extension + cli + report',
+    facts: ['consistent result schema', 'severity and tier metadata', 'shared output across interfaces']
   }
 };
 const stageTabs = document.querySelectorAll('.stage-tab');

@@ -559,11 +559,11 @@ Findings (4)
             </div>
             <div class="section-copy slide-text comparison-copy">
               <p class="eyebrow">Hybrid evidence</p>
-              <h3>Multiple signals, one finding workflow.</h3>
-              <p>Single-layer tools can produce useful signals, but evidence may stay fragmented. Chainvet is designed to coordinate static planning, runtime traces, and solver assistance before findings are surfaced.</p>
+              <h3>The main difference is signal cooperation.</h3>
+              <p>Many analyzers are built around one dominant technique. Chainvet’s design point is that static, runtime, and solver signals can support each other instead of competing for the auditor’s attention.</p>
               <div class="compare-block refined">
-                <div class="market-side"><b>Common scanner shape</b><span>One analysis layer reports independently, which can leave exploitability and path context unclear.</span></div>
-                <div class="chainvet-side"><b>Chainvet direction</b><span>A hybrid loop lets detectors guide runtime exploration, while solver assistance helps investigate stalled or narrow branches.</span></div>
+                <div class="market-side"><b>Technique-first scanner</b><span>The output often reflects one engine’s view of the contract, leaving the auditor to connect missing context manually.</span></div>
+                <div class="chainvet-side"><b>Chainvet direction</b><span>Each layer contributes a different kind of context before the result is presented to the user.</span></div>
               </div>
             </div>
           </div>
@@ -673,18 +673,18 @@ balances[msg.sender] = 0;</pre>
       <section class="section pipeline-section" id="pipeline">
         <canvas class="section-canvas" id="canvas-pipeline"></canvas>
         <div class="intro-band pipeline-summary reveal" aria-label="Pipeline summary">
-          <div><span>Frontend</span><strong>solc AST first, fallback parser when needed</strong></div>
-          <div><span>Hybrid core</span><strong>static rules, path checks, fuzz traces</strong></div>
-          <div><span>Evidence</span><strong>deduped findings, PoC context, reports</strong></div>
+          <div><span>Parse</span><strong>resolve Solidity structure and source spans</strong></div>
+          <div><span>Analyze</span><strong>run detectors, path checks, and fuzz jobs</strong></div>
+          <div><span>Publish</span><strong>send one result set to every interface</strong></div>
         </div>
         <div class="section-copy pipeline-copy reveal">
           <p class="eyebrow">Pipeline</p>
-          <h2>From Solidity source to evidence-backed findings.</h2>
-          <p>Chainvet builds a contract model, runs static detectors, deepens suspicious paths with symbolic reasoning and fuzzing, then merges the signals into report-ready findings. If solc cannot be resolved, fallback parsing keeps the scan useful instead of stopping the workflow.</p>
+          <h2>How a Chainvet scan moves through the engine.</h2>
+          <p>This section is the implementation view: Chainvet loads Solidity, schedules the hybrid checks, correlates overlapping output, and hands the same result set to the Web UI, VS Code extension, CLI, and report generator.</p>
           <ul class="soft-list pipeline-points">
-            <li>Prefer compiler metadata when available; fall back gracefully when project setup or network access gets in the way.</li>
-            <li>Use the hybrid engines together so a finding can carry source location, feasibility, runtime evidence, and severity context.</li>
-            <li>Normalize duplicate or low-signal output before it reaches the Web UI, VS Code extension, CLI table, or generated report.</li>
+            <li>Start from solc metadata when available, with fallback parsing used only to keep imperfect projects analyzable.</li>
+            <li>Promote detector candidates into deeper checks when control flow, value flow, or external calls need more context.</li>
+            <li>Keep downstream surfaces consistent by passing them the same normalized analysis result.</li>
           </ul>
         </div>
         <div class="pipeline-shell reveal" aria-label="Interactive Chainvet pipeline">
@@ -702,19 +702,19 @@ balances[msg.sender] = 0;</pre>
           <div class="stage-display" aria-live="polite">
             <div class="stage-narrative">
               <span id="stage-kicker">01 / Frontend & detectors</span>
-              <h3 id="stage-title">Build the contract view before judging it.</h3>
-              <p id="stage-copy">Chainvet prefers solc output for structure and source spans, then uses fallback parsing when compiler resolution fails so detectors still receive a normalized contract model.</p>
+              <h3 id="stage-title">Load the project into a usable contract model.</h3>
+              <p id="stage-copy">The scan begins by resolving Solidity structure, source spans, functions, and call sites. Compiler output is preferred; fallback parsing fills enough structure to keep analysis moving when solc is unavailable.</p>
               <div class="stage-insights" id="stage-insights">
-                <span>solc AST when available</span>
-                <span>fallback parser coverage</span>
-                <span>rule candidates with source spans</span>
+                <span>source spans and function map</span>
+                <span>imports and pragma context</span>
+                <span>detector candidates queued</span>
               </div>
             </div>
             <div class="stage-terminal" aria-label="Stage output preview">
               <div class="stage-terminal-top"><span></span><span></span><span></span><strong>chainvet pipeline</strong></div>
-              <pre id="stage-code"><code>frontend  solc ast loaded
-fallback  standby parser available
-detector  candidates mapped to source</code></pre>
+              <pre id="stage-code"><code>parse     source model ready
+map       functions and call sites
+queue     detector candidates</code></pre>
             </div>
           </div>
         </div>
