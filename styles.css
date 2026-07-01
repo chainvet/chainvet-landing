@@ -1592,6 +1592,67 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
   font-weight: 600;
 }
 
+.chainvet-run {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+.chainvet-run .term-command,
+.chainvet-run .term-metrics,
+.chainvet-run .term-summary {
+  margin: 0 !important;
+}
+.term-metrics {
+  color: var(--muted);
+  font-size: 12px;
+}
+.term-metrics span {
+  color: var(--subtle);
+  margin-inline: 6px;
+}
+.term-table {
+  overflow: hidden;
+  border: 1px solid rgba(205, 214, 244, .14);
+  border-radius: 12px;
+  background: rgba(17, 17, 27, .58);
+}
+.term-row {
+  display: grid;
+  grid-template-columns: 72px minmax(150px, 1.1fr) minmax(116px, .8fr) 84px;
+  gap: 10px;
+  align-items: center;
+  min-height: 33px;
+  padding: 0 11px;
+  border-top: 1px solid rgba(205, 214, 244, .08);
+  color: var(--muted);
+  font-size: 11px;
+}
+.term-row:first-child {
+  border-top: 0;
+}
+.term-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.term-head {
+  min-height: 30px;
+  background: rgba(49, 50, 68, .48);
+  color: var(--subtle);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.term-row.high span:first-child { color: var(--red); font-weight: 900; }
+.term-row.medium span:first-child { color: var(--peach); font-weight: 900; }
+.term-row.low span:first-child { color: var(--yellow); font-weight: 900; }
+.term-summary b {
+  color: var(--text);
+  margin-right: 8px;
+}
+
 @media (max-width: 980px) {
   .interface-slide {
     grid-template-columns: 1fr !important;
@@ -2722,6 +2783,20 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
   padding: clamp(16px, 2.1vw, 24px);
   font-size: clamp(11px, 1.08vw, 13px);
   line-height: 1.58;
+}
+.interface-slide .terminal-body.chainvet-run {
+  gap: clamp(7px, 1vw, 10px);
+}
+.interface-slide .term-row {
+  grid-template-columns: 64px minmax(116px, 1.05fr) minmax(92px, .8fr) 72px;
+  gap: 8px;
+  min-height: 30px;
+  padding-inline: 9px;
+  font-size: 10.5px;
+}
+.interface-slide .term-metrics,
+.interface-slide .term-summary {
+  font-size: 11px;
 }
 .interface-slide .terminal-body p {
   margin-bottom: 8px;
