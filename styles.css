@@ -133,7 +133,7 @@ dl { display: grid; gap: 12px; margin-top: 34px; } dl div, .finding-head { displ
   z-index: 1;
   opacity: 0.55; /* Balanced glowing effect that remains clear without distracting from content */
 }
-.pipeline-section .section-canvas { opacity: 0.72; }
+.pipeline-section .section-canvas { opacity: 0.48; }
 .section-copy, .pipeline-shell, .pdf-device, .browser-window, .vscode-window, .cicd-visual, .evaluation-grid, .intro-band {
   position: relative;
   z-index: 2;

@@ -898,7 +898,6 @@ function initPipelineCanvas(state) {
   state.startedAt = performance.now();
 
   const techniqueCards = document.querySelectorAll('.pipeline-summary > div');
-  const heading = document.querySelector('.pipeline-section h2');
   const shell = document.querySelector('.pipeline-shell');
 
   const techniques = [
@@ -929,14 +928,13 @@ function initPipelineCanvas(state) {
     }));
   }
 
-  if (heading && shell) {
-    const headingCoords = getLayoutCoords(heading, state.parent);
+  if (shell) {
     const shellCoords = getLayoutCoords(shell, state.parent);
     state.merge = {
-      x: Math.max(headingCoords.x + 245, Math.min(shellCoords.x - 54, state.width * 0.54)),
-      y: headingCoords.y + Math.min(heading.offsetHeight + 112, 210),
-      w: 136,
-      h: 54,
+      x: shellCoords.x + Math.min(shell.offsetWidth * 0.34, 230),
+      y: shellCoords.y - 38,
+      w: 138,
+      h: 52,
       color: '#a6e3a1',
       pulse: 0
     };
@@ -989,13 +987,13 @@ function drawPipelineCanvas(state) {
 
   function streamControls(stream) {
     const laneSpread = stream.lane * 42;
-    const vertical = Math.max(130, Math.abs(mergeY - stream.y) * 0.68);
+    const vertical = Math.max(96, Math.abs(mergeY - stream.y) * 0.54);
     return {
       cp1x: stream.x + laneSpread * 0.4,
       cp1y: stream.y + vertical,
-      cp2x: mergeX - 90 + laneSpread * 0.22,
-      cp2y: mergeY - 42 - stream.lane * 12,
-      endX: mergeX - 58 + stream.lane * 8,
+      cp2x: mergeX - 78 + laneSpread * 0.18,
+      cp2y: mergeY - 30 - stream.lane * 10,
+      endX: mergeX - 62 + stream.lane * 7,
       endY: mergeY + stream.lane * 8
     };
   }
@@ -1046,12 +1044,6 @@ function drawPipelineCanvas(state) {
     ctx.globalAlpha = 0.72;
     ctx.stroke();
 
-    ctx.fillStyle = stream.color;
-    ctx.globalAlpha = 0.78;
-    ctx.font = '800 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(stream.label, stream.x, stream.y - 16);
   });
 
   data.forEach((particle) => {
