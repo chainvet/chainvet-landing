@@ -520,33 +520,44 @@ const stages = {
     facts: ['generated call sequences', 'coverage and runtime traces', 'evidence for PoC and reports']
   }
 };
-const stageTabs = document.querySelectorAll('.stage-tab');
-const stageKicker = document.querySelector('#stage-kicker');
-const stageTitle = document.querySelector('#stage-title');
-const stageCopy = document.querySelector('#stage-copy');
-const stageCode = document.querySelector('#stage-code code');
-const stageInsights = document.querySelector('#stage-insights');
-stageTabs.forEach((tab) => {
-  tab.addEventListener('click', () => {
-    const stage = stages[tab.dataset.stage];
-    if (!stage) return;
-    stageTabs.forEach((item) => {
-      const active = item === tab;
-      item.classList.toggle('active', active);
-      item.setAttribute('aria-selected', String(active));
-    });
-    stageKicker.textContent = stage.kicker;
-    stageTitle.textContent = stage.title;
-    stageCopy.textContent = stage.copy;
-    stageCode.textContent = stage.code;
-    if (stageInsights) {
-      stageInsights.replaceChildren(...stage.facts.map((fact) => {
-        const item = document.createElement('span');
-        item.textContent = fact;
-        return item;
-      }));
-    }
+const pipelineSection = document.querySelector('.pipeline-section');
+const pipelineTabs = pipelineSection?.querySelector('.pipeline-tabs');
+const stageTabs = Array.from(pipelineSection?.querySelectorAll('.stage-tab') ?? []);
+const stageKicker = pipelineSection?.querySelector('#stage-kicker');
+const stageTitle = pipelineSection?.querySelector('#stage-title');
+const stageCopy = pipelineSection?.querySelector('#stage-copy');
+const stageCode = pipelineSection?.querySelector('#stage-code code');
+const stageInsights = pipelineSection?.querySelector('#stage-insights');
+
+function renderPipelineStage(tab) {
+  const stage = stages[tab?.dataset.stage];
+  if (!stage || !stageKicker || !stageTitle || !stageCopy || !stageCode) return;
+
+  stageTabs.forEach((item) => {
+    const active = item === tab;
+    item.classList.toggle('active', active);
+    item.setAttribute('aria-selected', String(active));
   });
+
+  stageKicker.textContent = stage.kicker;
+  stageTitle.textContent = stage.title;
+  stageCopy.textContent = stage.copy;
+  stageCode.textContent = stage.code;
+
+  if (stageInsights) {
+    stageInsights.replaceChildren(...stage.facts.map((fact) => {
+      const item = document.createElement('span');
+      item.textContent = fact;
+      return item;
+    }));
+  }
+}
+
+pipelineTabs?.addEventListener('click', (event) => {
+  const tab = event.target.closest('.stage-tab');
+  if (!tab || !pipelineTabs.contains(tab)) return;
+  event.preventDefault();
+  renderPipelineStage(tab);
 });
 
 const reportButtons = document.querySelectorAll('[data-pdf-page]');
@@ -881,7 +892,7 @@ function getLayoutCoords(element, parent) {
   return { x, y };
 }
 
-/* 1. Pipeline Canvas: Static Analysis + Symbolic Execution + Fuzzing -> Hybrid */
+/* 1. Pipeline Canvas: Static Analysis + Symbolic Execution + Fuzzing converging into Hybrid */
 function initPipelineCanvas(state) {
   state.data = [];
   state.startedAt = performance.now();
@@ -896,249 +907,240 @@ function initPipelineCanvas(state) {
     { label: 'FZ', name: 'Fuzzing', color: '#fab387' }
   ];
 
-  state.sources = [];
+  state.streams = [];
   if (techniqueCards.length === 3) {
     techniqueCards.forEach((card, idx) => {
       const coords = getLayoutCoords(card, state.parent);
-      state.sources.push({
+      state.streams.push({
         ...techniques[idx],
         x: coords.x + card.offsetWidth / 2,
-        y: coords.y + card.offsetHeight / 2,
-        phase: idx * 1.9
+        y: coords.y + card.offsetHeight + 6,
+        phase: idx * 1.7,
+        lane: idx - 1
       });
     });
   } else {
-    state.sources = techniques.map((technique, idx) => ({
+    state.streams = techniques.map((technique, idx) => ({
       ...technique,
       x: state.width * (0.22 + idx * 0.28),
-      y: state.height * 0.18,
-      phase: idx * 1.9
+      y: state.height * 0.22,
+      phase: idx * 1.7,
+      lane: idx - 1
     }));
   }
 
   if (heading && shell) {
     const headingCoords = getLayoutCoords(heading, state.parent);
     const shellCoords = getLayoutCoords(shell, state.parent);
-    state.dest = {
-      x: Math.max(headingCoords.x + 220, Math.min(shellCoords.x - 46, state.width * 0.52)),
-      y: headingCoords.y + Math.min(heading.offsetHeight + 92, 185),
+    state.merge = {
+      x: Math.max(headingCoords.x + 245, Math.min(shellCoords.x - 54, state.width * 0.54)),
+      y: headingCoords.y + Math.min(heading.offsetHeight + 112, 210),
+      w: 136,
+      h: 54,
       color: '#a6e3a1',
-      label: 'HYBRID',
       pulse: 0
     };
   } else {
-    state.dest = {
+    state.merge = {
       x: state.width * 0.5,
-      y: state.height * 0.45,
+      y: state.height * 0.46,
+      w: 136,
+      h: 54,
       color: '#a6e3a1',
-      label: 'HYBRID',
       pulse: 0
     };
   }
 
-  for (let i = 0; i < 66; i++) {
-    const srcIndex = i % state.sources.length;
+  for (let i = 0; i < 78; i++) {
+    const streamIndex = i % state.streams.length;
     state.data.push({
-      srcIndex,
+      streamIndex,
       progress: Math.random(),
-      speed: 0.0024 + Math.random() * 0.0038,
-      size: 1.8 + Math.random() * 2.8,
-      drift: (Math.random() - 0.5) * 34,
-      delay: Math.random() * Math.PI * 2
+      speed: 0.0022 + Math.random() * 0.0034,
+      size: 1.6 + Math.random() * 2.5,
+      offset: (Math.random() - 0.5) * 22,
+      shimmer: Math.random() * Math.PI * 2
     });
   }
 }
 
+function roundedRectPath(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + width - r, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+  ctx.lineTo(x + width, y + height - r);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+  ctx.lineTo(x + r, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+}
+
 function drawPipelineCanvas(state) {
-  const { ctx, width, height, mouse, data, sources, dest } = state;
-  if (!sources || sources.length === 0 || !dest) return;
+  const { ctx, mouse, data, streams, merge } = state;
+  if (!streams || streams.length === 0 || !merge) return;
 
   const now = performance.now();
   const elapsed = (now - (state.startedAt || now)) / 1000;
+  const mergeX = merge.x;
+  const mergeY = merge.y;
 
-  function pathControls(src) {
-    const horizontalBend = (dest.x - src.x) * 0.34;
-    const verticalBend = Math.max(120, Math.abs(dest.y - src.y) * 0.72);
+  function streamControls(stream) {
+    const laneSpread = stream.lane * 42;
+    const vertical = Math.max(130, Math.abs(mergeY - stream.y) * 0.68);
     return {
-      cp1x: src.x + horizontalBend * 0.28,
-      cp1y: src.y + verticalBend,
-      cp2x: dest.x - horizontalBend * 0.55,
-      cp2y: dest.y - verticalBend * 0.42
+      cp1x: stream.x + laneSpread * 0.4,
+      cp1y: stream.y + vertical,
+      cp2x: mergeX - 90 + laneSpread * 0.22,
+      cp2y: mergeY - 42 - stream.lane * 12,
+      endX: mergeX - 58 + stream.lane * 8,
+      endY: mergeY + stream.lane * 8
     };
   }
 
-  function pointOnPath(src, t, drift = 0) {
-    const { cp1x, cp1y, cp2x, cp2y } = pathControls(src);
+  function pointOnStream(stream, t, offset = 0) {
+    const { cp1x, cp1y, cp2x, cp2y, endX, endY } = streamControls(stream);
     const mt = 1 - t;
-    const px = mt * mt * mt * src.x + 3 * mt * mt * t * cp1x + 3 * mt * t * t * cp2x + t * t * t * dest.x;
-    const py = mt * mt * mt * src.y + 3 * mt * mt * t * cp1y + 3 * mt * t * t * cp2y + t * t * t * dest.y;
-    const wobble = Math.sin(t * Math.PI * 2 + src.phase + elapsed * 1.2) * drift;
-    return { x: px + wobble, y: py };
+    const px = mt * mt * mt * stream.x + 3 * mt * mt * t * cp1x + 3 * mt * t * t * cp2x + t * t * t * endX;
+    const py = mt * mt * mt * stream.y + 3 * mt * mt * t * cp1y + 3 * mt * t * t * cp2y + t * t * t * endY;
+    const wave = Math.sin(t * Math.PI * 3 + elapsed * 1.25 + stream.phase) * offset;
+    return { x: px + wave, y: py + offset * 0.18 };
   }
 
   ctx.save();
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  // Soft merge aura behind the hybrid node.
-  const aura = ctx.createRadialGradient(dest.x, dest.y, 4, dest.x, dest.y, 145);
-  aura.addColorStop(0, 'rgba(166, 227, 161, 0.22)');
-  aura.addColorStop(0.38, 'rgba(148, 226, 213, 0.09)');
+  const aura = ctx.createRadialGradient(mergeX, mergeY, 10, mergeX, mergeY, 178);
+  aura.addColorStop(0, 'rgba(166, 227, 161, 0.18)');
+  aura.addColorStop(0.44, 'rgba(137, 180, 250, 0.08)');
   aura.addColorStop(1, 'rgba(166, 227, 161, 0)');
   ctx.fillStyle = aura;
   ctx.beginPath();
-  ctx.arc(dest.x, dest.y, 145, 0, Math.PI * 2);
+  ctx.arc(mergeX, mergeY, 178, 0, Math.PI * 2);
   ctx.fill();
 
-  // Curved rails from each technique to the hybrid node.
-  sources.forEach((src) => {
-    const { cp1x, cp1y, cp2x, cp2y } = pathControls(src);
-
-    const rail = ctx.createLinearGradient(src.x, src.y, dest.x, dest.y);
-    rail.addColorStop(0, `${src.color}80`);
-    rail.addColorStop(0.72, 'rgba(205, 214, 244, 0.18)');
-    rail.addColorStop(1, 'rgba(166, 227, 161, 0.60)');
+  // Three translucent streams converge into one hybrid band.
+  streams.forEach((stream) => {
+    const controls = streamControls(stream);
+    const ribbon = ctx.createLinearGradient(stream.x, stream.y, controls.endX, controls.endY);
+    ribbon.addColorStop(0, `${stream.color}88`);
+    ribbon.addColorStop(0.58, `${stream.color}42`);
+    ribbon.addColorStop(1, 'rgba(166, 227, 161, 0.62)');
 
     ctx.beginPath();
-    ctx.moveTo(src.x, src.y);
-    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, dest.x, dest.y);
-    ctx.strokeStyle = rail;
-    ctx.lineWidth = 2.2;
+    ctx.moveTo(stream.x, stream.y);
+    ctx.bezierCurveTo(controls.cp1x, controls.cp1y, controls.cp2x, controls.cp2y, controls.endX, controls.endY);
+    ctx.strokeStyle = ribbon;
+    ctx.lineWidth = 14;
+    ctx.globalAlpha = 0.16;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(stream.x, stream.y);
+    ctx.bezierCurveTo(controls.cp1x, controls.cp1y, controls.cp2x, controls.cp2y, controls.endX, controls.endY);
+    ctx.strokeStyle = ribbon;
+    ctx.lineWidth = 3.2;
     ctx.globalAlpha = 0.72;
     ctx.stroke();
 
-    ctx.beginPath();
-    ctx.moveTo(src.x, src.y);
-    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, dest.x, dest.y);
-    ctx.strokeStyle = src.color;
-    ctx.lineWidth = 8;
-    ctx.globalAlpha = 0.055;
-    ctx.stroke();
+    ctx.fillStyle = stream.color;
+    ctx.globalAlpha = 0.78;
+    ctx.font = '800 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(stream.label, stream.x, stream.y - 16);
   });
 
-  // Moving evidence particles with short trails.
-  data.forEach((p) => {
-    const src = sources[p.srcIndex];
-    if (!src) return;
+  data.forEach((particle) => {
+    const stream = streams[particle.streamIndex];
+    if (!stream) return;
 
-    p.progress += p.speed;
-    if (p.progress > 1) {
-      p.progress = 0;
-      dest.pulse = Math.PI * 2;
+    particle.progress += particle.speed;
+    if (particle.progress > 1) {
+      particle.progress = 0;
+      merge.pulse = Math.PI * 2;
     }
 
-    const t = p.progress;
-    const head = pointOnPath(src, t, p.drift);
-    const tail = pointOnPath(src, Math.max(0, t - 0.055), p.drift * 0.65);
+    const head = pointOnStream(stream, particle.progress, particle.offset);
+    const tail = pointOnStream(stream, Math.max(0, particle.progress - 0.045), particle.offset * 0.6);
 
     if (mouse.active) {
       const dx = mouse.x - head.x;
       const dy = mouse.y - head.y;
       const dist = Math.hypot(dx, dy);
-      if (dist < 165) {
-        const pull = (1 - dist / 165) * 0.28;
+      if (dist < 150) {
+        const pull = (1 - dist / 150) * 0.22;
         head.x += dx * pull;
         head.y += dy * pull;
       }
     }
 
-    const trail = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
-    trail.addColorStop(0, `${src.color}00`);
-    trail.addColorStop(1, `${src.color}bb`);
+    const particleTrail = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+    particleTrail.addColorStop(0, `${stream.color}00`);
+    particleTrail.addColorStop(1, `${stream.color}cc`);
     ctx.beginPath();
     ctx.moveTo(tail.x, tail.y);
     ctx.lineTo(head.x, head.y);
-    ctx.strokeStyle = trail;
-    ctx.lineWidth = Math.max(1, p.size * 0.9);
-    ctx.globalAlpha = 0.8;
+    ctx.strokeStyle = particleTrail;
+    ctx.lineWidth = Math.max(1, particle.size * 0.9);
+    ctx.globalAlpha = 0.86;
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.arc(head.x, head.y, p.size, 0, Math.PI * 2);
-    ctx.fillStyle = src.color;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = src.color;
-    ctx.globalAlpha = 0.88;
+    ctx.arc(head.x, head.y, particle.size, 0, Math.PI * 2);
+    ctx.fillStyle = stream.color;
+    ctx.shadowBlur = 9;
+    ctx.shadowColor = stream.color;
+    ctx.globalAlpha = 0.9;
     ctx.fill();
     ctx.shadowBlur = 0;
   });
 
-  // Source technique nodes.
-  sources.forEach((src) => {
-    const pulse = 1 + Math.sin(elapsed * 2.1 + src.phase) * 0.08;
-    const radius = 18 * pulse;
-
-    ctx.globalAlpha = 0.16;
-    ctx.strokeStyle = src.color;
-    ctx.lineWidth = 1.3;
-    ctx.beginPath();
-    ctx.arc(src.x, src.y, radius + 13, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = 'rgba(17, 17, 27, 0.86)';
-    ctx.strokeStyle = src.color;
-    ctx.lineWidth = 1.5;
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = src.color;
-    ctx.beginPath();
-    ctx.arc(src.x, src.y, radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    ctx.fillStyle = src.color;
-    ctx.font = '800 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(src.label, src.x, src.y + 0.5);
-
-    ctx.fillStyle = 'rgba(205, 214, 244, 0.78)';
-    ctx.font = '700 11px Inter, system-ui, sans-serif';
-    ctx.fillText(src.name, src.x, src.y + 38);
-  });
-
-  // Hybrid merge node.
-  dest.pulse -= 0.045;
-  if (dest.pulse < 0) dest.pulse = 0;
-  const burst = dest.pulse > 0 ? Math.sin(dest.pulse) : 0;
-  const hybridRadius = 25 + Math.max(0, burst) * 4;
+  // Hybrid convergence form: a capsule/prism, not a circular node.
+  merge.pulse -= 0.05;
+  if (merge.pulse < 0) merge.pulse = 0;
+  const pulse = merge.pulse > 0 ? Math.max(0, Math.sin(merge.pulse)) : 0;
+  const x = mergeX - merge.w / 2;
+  const y = mergeY - merge.h / 2;
 
   for (let i = 0; i < 3; i++) {
-    ctx.globalAlpha = 0.18 - i * 0.045;
-    ctx.strokeStyle = dest.color;
-    ctx.lineWidth = 1.1;
-    ctx.beginPath();
-    ctx.arc(dest.x, dest.y, hybridRadius + 16 + i * 15 + Math.sin(elapsed * 1.4 + i) * 3, 0, Math.PI * 2);
+    ctx.globalAlpha = 0.16 - i * 0.04;
+    ctx.strokeStyle = merge.color;
+    ctx.lineWidth = 1;
+    roundedRectPath(ctx, x - 12 - i * 13, y - 8 - i * 8, merge.w + 24 + i * 26, merge.h + 16 + i * 16, 24 + i * 5);
     ctx.stroke();
   }
 
-  const core = ctx.createRadialGradient(dest.x - 8, dest.y - 10, 4, dest.x, dest.y, hybridRadius + 12);
-  core.addColorStop(0, 'rgba(205, 214, 244, 0.95)');
-  core.addColorStop(0.38, 'rgba(166, 227, 161, 0.86)');
-  core.addColorStop(1, 'rgba(148, 226, 213, 0.36)');
+  const core = ctx.createLinearGradient(x, y, x + merge.w, y + merge.h);
+  core.addColorStop(0, 'rgba(148, 226, 213, 0.28)');
+  core.addColorStop(0.5, 'rgba(166, 227, 161, 0.78)');
+  core.addColorStop(1, 'rgba(137, 180, 250, 0.34)');
 
   ctx.globalAlpha = 1;
-  ctx.fillStyle = core;
-  ctx.strokeStyle = 'rgba(166, 227, 161, 0.78)';
-  ctx.lineWidth = 1.6;
-  ctx.shadowBlur = 24;
-  ctx.shadowColor = dest.color;
-  ctx.beginPath();
-  ctx.arc(dest.x, dest.y, hybridRadius, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(17, 17, 27, 0.72)';
+  roundedRectPath(ctx, x, y, merge.w, merge.h, 22);
   ctx.fill();
+
+  ctx.strokeStyle = core;
+  ctx.lineWidth = 2 + pulse * 1.2;
+  ctx.shadowBlur = 24 + pulse * 14;
+  ctx.shadowColor = merge.color;
+  roundedRectPath(ctx, x, y, merge.w, merge.h, 22);
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  ctx.fillStyle = 'rgba(17, 17, 27, 0.94)';
-  ctx.font = '900 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+  ctx.fillStyle = 'rgba(205, 214, 244, 0.92)';
+  ctx.font = '900 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(dest.label, dest.x, dest.y + 0.5);
+  ctx.fillText('HYBRID CORE', mergeX, mergeY - 4);
 
-  ctx.fillStyle = 'rgba(166, 227, 161, 0.86)';
-  ctx.font = '800 12px Inter, system-ui, sans-serif';
-  ctx.fillText('merged evidence', dest.x, dest.y + hybridRadius + 26);
+  ctx.fillStyle = 'rgba(166, 227, 161, 0.84)';
+  ctx.font = '800 11px Inter, system-ui, sans-serif';
+  ctx.fillText('combined analysis', mergeX, mergeY + 15);
 
   ctx.restore();
 }
