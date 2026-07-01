@@ -3,6 +3,16 @@ const onScroll = () => header?.classList.toggle('elevated', window.scrollY > 20)
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
+const menuToggle = document.querySelector('.mobile-menu-toggle');
+if (menuToggle && header) {
+  menuToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const isOpen = header.classList.toggle('menu-open');
+    menuToggle.setAttribute('aria-expanded', isOpen);
+  });
+}
+
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
   link.addEventListener('click', (event) => {
     const id = link.getAttribute('href');
@@ -12,29 +22,133 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
     
     event.preventDefault();
     
-    // Disable snapping temporarily to prevent animation fights
-    document.documentElement.classList.add('no-snap');
+    if (header && header.classList.contains('menu-open')) {
+      header.classList.remove('menu-open');
+      menuToggle?.setAttribute('aria-expanded', 'false');
+    }
     
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
-    // Re-enable snapping when scrolling stops
-    let scrollTimeout;
-    const onScrollEnd = () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        document.documentElement.classList.remove('no-snap');
-        window.removeEventListener('scroll', onScrollEnd);
-      }, 150);
-    };
-    
-    window.addEventListener('scroll', onScrollEnd);
-    
-    // Fallback re-enable in case we're already at target scroll position
-    setTimeout(() => {
-      document.documentElement.classList.remove('no-snap');
-    }, 1000);
+    scrollToPageTarget(target, 360);
   });
 });
+
+
+/* ── Section wheel paging ──────────────────────────────────────────── */
+const pageSections = Array.from(document.querySelectorAll('.hero, main > .section, main > .final-cta'));
+let sectionPagingLocked = false;
+let wheelIntent = 0;
+let wheelIntentTimer = 0;
+let activeSectionScroll = 0;
+
+function canScrollWithin(target, deltaY) {
+  let node = target instanceof Element ? target : target?.parentElement;
+  while (node && node !== document.body && node !== document.documentElement) {
+    const style = window.getComputedStyle(node);
+    const overflowY = style.overflowY;
+    const scrollable = /(auto|scroll)/.test(overflowY) && node.scrollHeight > node.clientHeight + 2;
+    if (scrollable) {
+      const atTop = node.scrollTop <= 1;
+      const atBottom = node.scrollTop + node.clientHeight >= node.scrollHeight - 1;
+      if ((deltaY < 0 && !atTop) || (deltaY > 0 && !atBottom)) return true;
+    }
+    node = node.parentElement;
+  }
+  return false;
+}
+
+function activePageIndex() {
+  if (!pageSections.length) return -1;
+  const anchor = window.innerHeight * 0.42;
+  let bestIndex = 0;
+  let bestDistance = Infinity;
+  pageSections.forEach((section, index) => {
+    const rect = section.getBoundingClientRect();
+    const centerDistance = Math.abs((rect.top + Math.min(rect.height, window.innerHeight) * 0.42) - anchor);
+    if (centerDistance < bestDistance) {
+      bestDistance = centerDistance;
+      bestIndex = index;
+    }
+  });
+  return bestIndex;
+}
+
+function sectionEase(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function sectionTop(target) {
+  return Math.max(0, Math.round(target.getBoundingClientRect().top + window.scrollY));
+}
+
+function scrollToPageTarget(target, duration = 420) {
+  if (!target) return;
+  window.cancelAnimationFrame(activeSectionScroll);
+
+  const start = window.scrollY;
+  const destination = sectionTop(target);
+  const distance = destination - start;
+  const startedAt = performance.now();
+
+  document.documentElement.classList.add('section-paging');
+
+  function step(now) {
+    const elapsed = now - startedAt;
+    const progress = Math.min(1, elapsed / duration);
+    const eased = sectionEase(progress);
+    window.scrollTo(0, Math.round(start + distance * eased));
+
+    if (progress < 1) {
+      activeSectionScroll = window.requestAnimationFrame(step);
+      return;
+    }
+
+    window.scrollTo(0, destination);
+    if (target.classList.contains('zoom-section')) {
+      target.style.setProperty('--zoom', '1');
+      target.style.setProperty('--zoom-opacity', '1');
+    }
+    window.requestAnimationFrame(() => window.scrollTo(0, destination));
+    window.setTimeout(() => {
+      document.documentElement.classList.remove('section-paging');
+    }, 80);
+  }
+
+  activeSectionScroll = window.requestAnimationFrame(step);
+}
+
+function pageToSection(index) {
+  const target = pageSections[index];
+  if (!target) return;
+  sectionPagingLocked = true;
+  scrollToPageTarget(target, 420);
+  window.setTimeout(() => {
+    sectionPagingLocked = false;
+  }, 500);
+}
+
+window.addEventListener('wheel', (event) => {
+  if (!pageSections.length) return;
+  if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+  if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+  if (canScrollWithin(event.target, event.deltaY)) return;
+
+  const current = activePageIndex();
+  const instantDirection = event.deltaY > 0 ? 1 : -1;
+  const canPage = (instantDirection > 0 && current < pageSections.length - 1) || (instantDirection < 0 && current > 0);
+  if (!canPage) return;
+
+  event.preventDefault();
+  wheelIntent += event.deltaY;
+  window.clearTimeout(wheelIntentTimer);
+  wheelIntentTimer = window.setTimeout(() => { wheelIntent = 0; }, 160);
+
+  if (sectionPagingLocked || Math.abs(wheelIntent) < 48) return;
+
+  const direction = wheelIntent > 0 ? 1 : -1;
+  const next = Math.max(0, Math.min(pageSections.length - 1, current + direction));
+
+  wheelIntent = 0;
+  pageToSection(next);
+}, { passive: false });
 
 /* ── Interactive Auditing Network Canvas ─────────────────────────────── */
 const canvas = document.getElementById('hero-canvas');
@@ -154,8 +268,27 @@ if (canvas && heroSection) {
     }
     
     ctx.shadowBlur = 0;
-    requestAnimationFrame(animate);
+    if (heroVisible) {
+      requestAnimationFrame(animate);
+    } else {
+      heroAnimating = false;
+    }
   }
+  
+  let heroVisible = true;
+  let heroAnimating = true;
+  
+  const heroObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      heroVisible = entry.isIntersecting;
+      if (heroVisible && !heroAnimating) {
+        heroAnimating = true;
+        animate();
+      }
+    });
+  }, { threshold: 0.05 });
+  
+  heroObserver.observe(heroSection);
   
   window.addEventListener('resize', () => {
     width = canvas.width = heroSection.offsetWidth;
@@ -178,7 +311,8 @@ if (canvas && heroSection) {
   animate();
 }
 
-const zoomSections = document.querySelectorAll('.hero, .section, .final-cta');
+const zoomSections = document.querySelectorAll('.section, .final-cta');
+zoomSections.forEach((el) => el.classList.add('zoom-section'));
 
 // Track which sections have had their .reveal children triggered
 const revealedSections = new WeakSet();
@@ -332,6 +466,63 @@ if (consoleCopyBtn) {
 
 const vscodeStatus = document.querySelector('#vscode-status');
 const vscodeOutput = document.querySelector('#vscode-output');
+const vscodeDetail = document.querySelector('#vscode-finding-detail');
+const vscodeDetailSeverity = document.querySelector('#vscode-detail-severity');
+const vscodeDetailKind = document.querySelector('#vscode-detail-kind');
+const vscodeDetailName = document.querySelector('#vscode-detail-name');
+const vscodeDetailLocation = document.querySelector('#vscode-detail-location');
+const vscodeDetailSummary = document.querySelector('#vscode-detail-summary');
+const vscodeDetailFunction = document.querySelector('#vscode-detail-function');
+const vscodeDetailEvidence = document.querySelector('#vscode-detail-evidence');
+const vscodeDetailSnippet = document.querySelector('#vscode-detail-snippet');
+
+const vscodeFindingDetails = {
+  '12': {
+    severity: 'high',
+    badge: 'H',
+    name: 'Reentrancy In Withdraw',
+    location: 'Reentrancy.sol:12',
+    fn: 'withdraw()',
+    evidence: 'external call before balance reset',
+    summary: 'The withdrawal path sends Ether to msg.sender before clearing balances[msg.sender], so a fallback callback can re-enter while the original balance is still available.',
+    snippet: 'msg.sender.call.value(balances[msg.sender])();\nbalances[msg.sender] = 0;'
+  },
+  '20': {
+    severity: 'medium',
+    badge: 'M',
+    name: 'Unchecked Low Level Call',
+    location: 'Reentrancy.sol:20',
+    fn: 'trigger(address)',
+    evidence: 'return value is ignored',
+    summary: 'The low-level target.call result is not checked. Failed calls can be silently ignored, which may leave calling code assuming an action succeeded.',
+    snippet: 'target.call(bytes4(keccak256("withdraw()")));\n// return value is not inspected'
+  },
+  '7': {
+    severity: 'low',
+    badge: 'L',
+    name: 'Timestamp Dependency',
+    location: 'Reentrancy.sol:7',
+    fn: 'deposit()',
+    evidence: 'block.timestamp influences contract state',
+    summary: 'The function records block.timestamp in contract state. Validators have limited influence over timestamps, so this should not drive sensitive logic.',
+    snippet: 'lastBlock = block.timestamp;\n// avoid timestamp-sensitive authorization or payouts'
+  }
+};
+
+function updateVscodeDetail(lineNumber) {
+  const detail = vscodeFindingDetails[String(lineNumber)] || vscodeFindingDetails['12'];
+  if (!detail) return;
+  if (vscodeDetail) vscodeDetail.dataset.severity = detail.severity;
+  if (vscodeDetailSeverity) vscodeDetailSeverity.textContent = detail.badge;
+  if (vscodeDetailKind) vscodeDetailKind.textContent = detail.severity.charAt(0).toUpperCase() + detail.severity.slice(1) + ' severity · Finding';
+  if (vscodeDetailName) vscodeDetailName.textContent = detail.name;
+  if (vscodeDetailLocation) vscodeDetailLocation.textContent = detail.location;
+  if (vscodeDetailSummary) vscodeDetailSummary.textContent = detail.summary;
+  if (vscodeDetailFunction) vscodeDetailFunction.textContent = detail.fn;
+  if (vscodeDetailEvidence) vscodeDetailEvidence.textContent = detail.evidence;
+  if (vscodeDetailSnippet) vscodeDetailSnippet.textContent = detail.snippet;
+}
+updateVscodeDetail('12');
 
 /* Sidebar toolbar action buttons */
 const actionText = {
@@ -378,9 +569,13 @@ document.querySelectorAll('.finding-item').forEach((item) => {
     const label = item.querySelector('.tree-label')?.textContent || 'Finding';
     const desc = item.querySelector('.tree-desc')?.textContent || '';
     const sev = item.dataset.severity || 'unknown';
-    if (vscodeStatus) vscodeStatus.textContent = 'Analysis complete';
+    updateVscodeDetail(item.dataset.line);
+    vscodeDetail?.classList.remove('pulse');
+    void vscodeDetail?.offsetWidth;
+    vscodeDetail?.classList.add('pulse');
+    if (vscodeStatus) vscodeStatus.textContent = 'Finding selected';
     if (vscodeOutput) {
-      vscodeOutput.textContent = '▶ Finding detail\n  kind       ' + label + '\n  severity   ' + sev + '\n  location   ' + desc + '\n  line       ' + item.dataset.line;
+      vscodeOutput.textContent = '▶ Chainvet: Show Finding Detail\n  kind       ' + label + '\n  severity   ' + sev + '\n  location   ' + desc + '\n  line       ' + item.dataset.line + '\n  detail     opened in Chainvet editor tab';
     }
   });
 });
@@ -437,10 +632,9 @@ filterButtons.forEach((btn) => {
 const sectionCanvases = [
   { id: 'canvas-pipeline', init: initPipelineCanvas, draw: drawPipelineCanvas },
   { id: 'canvas-reports', init: initReportsCanvas, draw: drawReportsCanvas },
-  { id: 'canvas-webui', init: initWebuiCanvas, draw: drawWebuiCanvas },
-  { id: 'canvas-extension', init: initExtensionCanvas, draw: drawExtensionCanvas },
+  { id: 'canvas-interfaces', init: initInterfacesCanvas, draw: drawInterfacesCanvas },
   { id: 'canvas-cicd', init: initCicdCanvas, draw: drawCicdCanvas },
-  { id: 'canvas-evaluation', init: initEvaluationCanvas, draw: drawEvaluationCanvas }
+  { id: 'canvas-comparison', init: initComparisonCanvas, draw: drawComparisonCanvas }
 ];
 
 const canvasStates = new Map();
@@ -751,124 +945,49 @@ function drawReportsCanvas(state) {
   ctx.globalAlpha = 1.0;
 }
 
-/* 3. Web UI Canvas: Hexagonal Grid Scan */
-function initWebuiCanvas(state) {
+/* 3. Workspaces Canvas: Unified Interface Elements */
+function initInterfacesCanvas(state) {
   state.data = [];
-  const hexRadius = 40;
-  const cols = Math.ceil(state.width / (hexRadius * 1.5)) + 1;
-  const rows = Math.ceil(state.height / (hexRadius * Math.sqrt(3))) + 1;
-
-  for (let c = 0; c < cols; c++) {
-    for (let r = 0; r < rows; r++) {
-      const cx = c * hexRadius * 1.5;
-      const cy = r * hexRadius * Math.sqrt(3) + (c % 2 ? (hexRadius * Math.sqrt(3)) / 2 : 0);
-      state.data.push({
-        x: cx,
-        y: cy,
-        r: hexRadius,
-        glow: 0,
-        color: ['#f38ba8', '#fab387', '#89b4fa'][Math.floor(Math.random() * 3)]
-      });
-    }
-  }
-}
-
-function drawWebuiCanvas(state) {
-  const { ctx, mouse, data } = state;
-  ctx.lineWidth = 0.8;
-
-  data.forEach((hex) => {
-    let targetGlow = 0;
-    if (mouse.active) {
-      const dx = mouse.x - hex.x;
-      const dy = mouse.y - hex.y;
-      const dist = Math.hypot(dx, dy);
-      if (dist < 150) {
-        targetGlow = (1 - dist / 150) * 0.95;
-      }
-    }
-
-    // Smooth hover transition
-    hex.glow += (targetGlow - hex.glow) * 0.1;
-
-    // Draw faint base hexagon
-    ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-      const angle = (Math.PI / 3) * i;
-      const x = hex.x + Math.cos(angle) * hex.r;
-      const y = hex.y + Math.sin(angle) * hex.r;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-
-    if (hex.glow > 0.02) {
-      ctx.strokeStyle = hex.color;
-      ctx.globalAlpha = 0.15 + hex.glow * 0.55; // Brighter hex outline
-      ctx.stroke();
-      
-      // Faint hex center fill
-      ctx.fillStyle = hex.color;
-      ctx.globalAlpha = hex.glow * 0.18; // More visible fill
-      ctx.fill();
-    } else {
-      ctx.strokeStyle = 'rgba(108, 112, 134, 0.16)'; // More visible grid lines
-      ctx.globalAlpha = 1.0;
-      ctx.stroke();
-    }
-  });
-  ctx.globalAlpha = 1.0;
-}
-
-/* 4. Extension Canvas: Editor Code Stream */
-function initExtensionCanvas(state) {
-  state.data = [];
-  const codeTokens = [
-    'pragma', 'solidity', 'contract', 'require', 'payable', 'address',
-    'balances', 'withdraw', 'transfer', 'mapping', 'msg.sender', 'msg.value',
-    'require(ok)', 'uint256', 'function', 'revert()', 'owner'
-  ];
-  const count = 18;
+  const count = 28;
   for (let i = 0; i < count; i++) {
     state.data.push({
       x: Math.random() * state.width,
-      y: Math.random() * state.height + state.height,
-      text: codeTokens[Math.floor(Math.random() * codeTokens.length)],
-      speed: 0.35 + Math.random() * 0.4,
-      size: 11 + Math.random() * 4,
-      color: ['#a6e3a1', '#94e2d5', '#cba6f7', '#89b4fa'][Math.floor(Math.random() * 4)],
-      opacity: 0.35 + Math.random() * 0.35 // Brighter text streams
+      y: Math.random() * state.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      size: 4 + Math.random() * 8,
+      pulse: Math.random() * Math.PI * 2,
+      color: ['#cba6f7', '#89b4fa', '#94e2d5'][Math.floor(Math.random() * 3)]
     });
   }
 }
 
-function drawExtensionCanvas(state) {
+function drawInterfacesCanvas(state) {
   const { ctx, width, height, mouse, data } = state;
-  ctx.font = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
-
-  data.forEach((t) => {
-    t.y -= t.speed;
-
+  ctx.lineWidth = 1;
+  
+  data.forEach((p) => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.pulse += 0.02;
+    
+    if (p.x < 0 || p.x > width) p.vx *= -1;
+    if (p.y < 0 || p.y > height) p.vy *= -1;
+    
+    let alpha = 0.08 + Math.sin(p.pulse) * 0.04;
+    
     if (mouse.active) {
-      const dx = mouse.x - t.x;
-      const dy = mouse.y - t.y;
-      const dist = Math.hypot(dx, dy);
-      if (dist < 120) {
-        // Push characters away from cursor
-        const force = (120 - dist) * 0.08;
-        t.x -= (dx / dist) * force;
+      const dist = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+      if (dist < 150) {
+        alpha = Math.max(alpha, (1 - dist / 150) * 0.35);
       }
     }
-
-    if (t.y < -20) {
-      t.y = height + 30;
-      t.x = Math.random() * width;
-    }
-
-    ctx.fillStyle = t.color;
-    ctx.globalAlpha = t.opacity;
-    ctx.font = `${t.size}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
-    ctx.fillText(t.text, t.x, t.y);
+    
+    ctx.beginPath();
+    ctx.rect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+    ctx.strokeStyle = p.color;
+    ctx.globalAlpha = alpha;
+    ctx.stroke();
   });
   ctx.globalAlpha = 1.0;
 }
@@ -930,75 +1049,138 @@ function drawCicdCanvas(state) {
   ctx.globalAlpha = 1.0;
 }
 
-/* 6. Evaluation Canvas: Scatter Plot Metrics */
-function initEvaluationCanvas(state) {
-  state.data = [];
-  const pointCount = 42; // Increased points count for a richer scatter metrics look
-  for (let i = 0; i < pointCount; i++) {
-    state.data.push({
-      x: 100 + Math.random() * (state.width - 200),
-      y: 80 + Math.random() * (state.height - 160),
-      baseX: 0,
-      baseY: 0,
-      color: ['#a6e3a1', '#f38ba8'][Math.floor(Math.random() * 2)],
-      r: 3.5 + Math.random() * 3,
-      pulseTime: Math.random() * Math.PI * 2
-    });
+
+
+/* 7. Comparison Canvas: Scanner Sweep Grid */
+function initComparisonCanvas(state) {
+  state.data = {
+    dots: [],
+    sweepX: 0,
+    sweepSpeed: 1.2
+  };
+  const spacing = 45;
+  const cols = Math.ceil(state.width / spacing) + 1;
+  const rows = Math.ceil(state.height / spacing) + 1;
+  
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows; r++) {
+      state.data.dots.push({
+        x: c * spacing,
+        y: r * spacing,
+        r: 1 + Math.random() * 1.5,
+        pulse: Math.random() * Math.PI * 2
+      });
+    }
   }
 }
 
-function drawEvaluationCanvas(state) {
+function drawComparisonCanvas(state) {
   const { ctx, width, height, mouse, data } = state;
-  ctx.lineWidth = 0.8;
+  if (!data) return;
   
-  // Draw grid axes
-  ctx.strokeStyle = 'rgba(108, 112, 134, 0.22)'; // More visible grid lines
-  ctx.beginPath();
-  // Horizontal grid lines
-  for (let y = 50; y < height; y += 80) {
-    ctx.moveTo(50, y);
-    ctx.lineTo(width - 50, y);
+  // Update scanner line sweep
+  data.sweepX += data.sweepSpeed;
+  if (data.sweepX > width) {
+    data.sweepX = 0;
   }
-  // Vertical grid lines
-  for (let x = 50; x < width; x += 100) {
-    ctx.moveTo(x, 50);
-    ctx.lineTo(x, height - 50);
-  }
-  ctx.stroke();
-
-  data.forEach((p) => {
-    p.pulseTime += 0.02;
-    const offset = Math.sin(p.pulseTime) * 3;
-    const finalX = p.x;
-    const finalY = p.y + offset;
-
-    // Draw coordinate projectors on mouse hover
+  
+  // Draw dots
+  data.dots.forEach((dot) => {
+    dot.pulse += 0.015;
+    const distToSweep = Math.abs(dot.x - data.sweepX);
+    let intensity = 0;
+    if (distToSweep < 100) {
+      intensity = (1 - distToSweep / 100);
+    }
+    
+    // Mouse hover influence
     if (mouse.active) {
-      const dx = mouse.x - finalX;
-      const dy = mouse.y - finalY;
-      const dist = Math.hypot(dx, dy);
-
-      if (dist < 180) {
-        ctx.beginPath();
-        ctx.setLineDash([4, 4]); // Dashed guide lines
-        ctx.moveTo(finalX, finalY);
-        ctx.lineTo(mouse.x, mouse.y);
-        ctx.strokeStyle = p.color;
-        ctx.globalAlpha = (1 - dist / 180) * 0.75; // Much brighter guides
-        ctx.stroke();
-        ctx.setLineDash([]); // Reset line dash
+      const mouseDist = Math.hypot(dot.x - mouse.x, dot.y - mouse.y);
+      if (mouseDist < 120) {
+        intensity = Math.max(intensity, (1 - mouseDist / 120) * 0.85);
       }
     }
-
-    // Draw metrics dot
+    
     ctx.beginPath();
-    ctx.arc(finalX, finalY, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = p.color;
-    ctx.globalAlpha = 0.65 + Math.sin(p.pulseTime) * 0.25; // Brighter points
-    ctx.shadowBlur = 8;
-    ctx.shadowColor = p.color;
+    ctx.arc(dot.x, dot.y, dot.r + intensity * 2, 0, Math.PI * 2);
+    
+    if (intensity > 0.05) {
+      ctx.fillStyle = dot.x < width / 2 ? '#f38ba8' : '#a6e3a1'; // Red on left (traditional), Green on right (chainvet)
+      ctx.globalAlpha = 0.12 + intensity * 0.45;
+    } else {
+      ctx.fillStyle = '#6c7086'; // Subtle color for idle dots
+      ctx.globalAlpha = 0.08 + Math.sin(dot.pulse) * 0.04;
+    }
     ctx.fill();
-    ctx.shadowBlur = 0;
   });
+  
+  // Draw the actual vertical scanning line
+  ctx.beginPath();
+  const grad = ctx.createLinearGradient(data.sweepX - 20, 0, data.sweepX + 20, 0);
+  grad.addColorStop(0, 'transparent');
+  grad.addColorStop(0.5, 'rgba(203, 166, 247, 0.22)'); // Mauve scanner line
+  grad.addColorStop(1, 'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(data.sweepX - 20, 0, 40, height);
+  
   ctx.globalAlpha = 1.0;
 }
+
+/* ── Interface Tabs Slider ───────────────────────────────────────── */
+const interfaceTabs = document.querySelectorAll('.interface-tab');
+const interfaceSlides = document.querySelectorAll('.interface-slide');
+
+interfaceTabs.forEach((tab) => {
+  tab.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Toggle tab active class
+    interfaceTabs.forEach((t) => t.classList.toggle('active', t === tab));
+    interfaceTabs.forEach((t) => t.setAttribute('aria-selected', t === tab ? 'true' : 'false'));
+    
+    // Toggle slides
+    const targetTab = tab.dataset.tab;
+    interfaceSlides.forEach((slide) => {
+      if (slide.id === `slide-${targetTab}`) {
+        slide.style.display = 'grid';
+        // Add active class for transitions
+        setTimeout(() => slide.classList.add('active'), 20);
+      } else {
+        slide.classList.remove('active');
+        slide.style.display = 'none';
+      }
+    });
+  });
+});
+
+/* ── Comparison Tabs Slider ───────────────────────────────────────── */
+const comparisonTabs = document.querySelectorAll('.comparison-tab');
+const comparisonSlides = document.querySelectorAll('.comparison-slide');
+
+comparisonTabs.forEach((tab) => {
+  tab.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Toggle tab active class
+    comparisonTabs.forEach((t) => t.classList.toggle('active', t === tab));
+    comparisonTabs.forEach((t) => t.setAttribute('aria-selected', t === tab ? 'true' : 'false'));
+    
+    // Toggle slides
+    const targetTab = tab.dataset.tab;
+    comparisonSlides.forEach((slide) => {
+      if (slide.id === `comp-slide-${targetTab}`) {
+        slide.style.display = 'grid';
+        // Add active class for transitions
+        setTimeout(() => slide.classList.add('active'), 20);
+      } else {
+        slide.classList.remove('active');
+        slide.style.display = 'none';
+      }
+    });
+  });
+});
+
+
+
