@@ -96,22 +96,37 @@ function canScrollWithin(target, deltaY) {
   return false;
 }
 
-function isInsideMockupSurface(target) {
-  const node = target instanceof Element ? target : target?.parentElement;
-  if (!node) return false;
+const mockupSurfaceSelector = [
+  '.interfaces-slider',
+  '.webui-replica',
+  '.vscode-window',
+  '.terminal-window',
+  '.comparison-slider',
+  '.comp-panel',
+  '.pipeline-shell',
+  '.cicd-visual',
+  '.pdf-device',
+  '.hero-console'
+].join(',');
 
-  return Boolean(node.closest([
-    '.interfaces-slider',
-    '.webui-replica',
-    '.vscode-window',
-    '.terminal-window',
-    '.comparison-slider',
-    '.comp-panel',
-    '.pipeline-shell',
-    '.cicd-visual',
-    '.pdf-device',
-    '.hero-console'
-  ].join(',')));
+function closestMockupSurface(target) {
+  const node = target instanceof Element ? target : target?.parentElement;
+  return node?.closest(mockupSurfaceSelector) ?? null;
+}
+
+function eventPointElement(event) {
+  return document.elementFromPoint(event.clientX, event.clientY);
+}
+
+function mockupSurfaceFromEvent(event) {
+  return closestMockupSurface(event.target)
+    || closestMockupSurface(eventPointElement(event));
+}
+
+function canScrollWithinEvent(event) {
+  const pointElement = eventPointElement(event);
+  return canScrollWithin(event.target, event.deltaY)
+    || (pointElement !== event.target && canScrollWithin(pointElement, event.deltaY));
 }
 
 function activePageIndex() {
@@ -186,11 +201,33 @@ function pageToSection(index) {
 
 window.addEventListener('wheel', (event) => {
   if (isCompactViewport()) return;
+  if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+  if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+  if (!mockupSurfaceFromEvent(event)) return;
+  if (canScrollWithinEvent(event)) return;
+
+  event.preventDefault();
+  wheelIntent = 0;
+  window.clearTimeout(wheelIntentTimer);
+}, { passive: false, capture: true });
+
+window.addEventListener('wheel', (event) => {
+  if (isCompactViewport()) return;
   if (!pageSections.length) return;
   if (event.ctrlKey || event.metaKey || event.shiftKey) return;
   if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
-  if (isInsideMockupSurface(event.target)) return;
-  if (canScrollWithin(event.target, event.deltaY)) return;
+
+  const mockupSurface = mockupSurfaceFromEvent(event);
+  if (mockupSurface) {
+    if (canScrollWithinEvent(event)) return;
+
+    event.preventDefault();
+    wheelIntent = 0;
+    window.clearTimeout(wheelIntentTimer);
+    return;
+  }
+
+  if (canScrollWithinEvent(event)) return;
 
   const current = activePageIndex();
   const instantDirection = event.deltaY > 0 ? 1 : -1;
