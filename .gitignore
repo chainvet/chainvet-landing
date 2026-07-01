@@ -23,3 +23,9 @@ yarn-error.log*
 scratch/
 tmp/
 temp/
+# Generated benchmark/evaluation artifacts
+benchmarks.md
+results/
+
+# Packaged design/source archives
+assets/*.zip
