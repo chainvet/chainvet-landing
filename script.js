@@ -498,33 +498,26 @@ document.querySelectorAll('.reveal').forEach((node) => {
 });
 
 const stages = {
-  detector: {
-    kicker: '01 / Frontend & detectors',
-    title: 'Load the project into a usable contract model.',
-    copy: 'The scan begins by resolving Solidity structure, source spans, functions, and call sites. Compiler output is preferred; fallback parsing fills enough structure to keep analysis moving when solc is unavailable.',
-    code: 'parse     source model ready\nmap       functions and call sites\nqueue     detector candidates',
-    facts: ['source spans and function map', 'imports and pragma context', 'detector candidates queued']
+  static: {
+    kicker: '01 / Static Analysis',
+    title: 'Start broad with source-level detectors.',
+    copy: 'Static analysis builds the first risk map from Solidity structure: functions, modifiers, storage writes, external calls, value transfers, and known vulnerability patterns.',
+    code: 'static    map contracts/functions\nscan      calls, storage, values\nqueue     candidate risk surfaces',
+    facts: ['source spans and function map', 'detectors for known risk patterns', 'candidates queued for deeper checks']
   },
-  path: {
-    kicker: '02 / Symbolic reasoning',
-    title: 'Escalate only the paths that need deeper checks.',
-    copy: 'Static candidates seed targeted symbolic work around branch constraints, state updates, value movement, and external-call ordering.',
-    code: 'select    suspicious function\nsolve     branch and value constraints\nmark      feasible path context',
-    facts: ['targeted path exploration', 'state transition context', 'feasibility notes for triage']
+  symbolic: {
+    kicker: '02 / Symbolic Execution',
+    title: 'Reason about paths that static checks cannot prove alone.',
+    copy: 'Symbolic execution focuses on suspicious branches and state transitions, checking whether constraints make risky flows feasible before they are treated as stronger evidence.',
+    code: 'symbolic  select suspicious path\nsolve     branch/state constraints\nmark      feasible execution context',
+    facts: ['branch constraint solving', 'state transition reasoning', 'feasibility context for triage']
   },
-  runtime: {
-    kicker: '03 / Fuzz evidence',
-    title: 'Exercise behavior with generated call sequences.',
-    copy: 'The fuzzing layer runs concrete transactions around the selected surfaces and records coverage, crashes, callbacks, failed calls, and value-flow behavior.',
-    code: 'mutate    call sequence corpus\nexecute   transaction harness\nrecord    coverage and traces',
-    facts: ['call sequence corpus', 'coverage and trace output', 'runtime signal for risky flows']
-  },
-  surface: {
-    kicker: '04 / Correlate & publish',
-    title: 'Hand every interface the same normalized result.',
-    copy: 'Chainvet groups overlapping signals, applies severity and tier metadata, then exposes one consistent output to the Web UI, VS Code extension, CLI, Markdown, and PDF report paths.',
-    code: 'group     by file/function/kind\nannotate  severity and tier\npublish   ui + extension + cli + report',
-    facts: ['consistent result schema', 'severity and tier metadata', 'shared output across interfaces']
+  fuzzing: {
+    kicker: '03 / Fuzzing',
+    title: 'Exercise the contract with concrete transaction sequences.',
+    copy: 'Fuzzing generates and mutates call sequences around selected risk surfaces, then records coverage and runtime traces that can support exploit explanations and report evidence.',
+    code: 'fuzz      mutate call sequence corpus\nexecute   transaction harness\nrecord    coverage and runtime traces',
+    facts: ['generated call sequences', 'coverage and runtime traces', 'evidence for PoC and reports']
   }
 };
 const stageTabs = document.querySelectorAll('.stage-tab');

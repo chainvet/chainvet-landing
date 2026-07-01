@@ -672,49 +672,49 @@ balances[msg.sender] = 0;</pre>
 
       <section class="section pipeline-section" id="pipeline">
         <canvas class="section-canvas" id="canvas-pipeline"></canvas>
-        <div class="intro-band pipeline-summary reveal" aria-label="Pipeline summary">
-          <div><span>Parse</span><strong>resolve Solidity structure and source spans</strong></div>
-          <div><span>Analyze</span><strong>run detectors, path checks, and fuzz jobs</strong></div>
-          <div><span>Publish</span><strong>send one result set to every interface</strong></div>
+        <div class="intro-band pipeline-summary reveal" aria-label="Hybrid analysis techniques">
+          <div><span>Static Analysis</span><strong>fast source-level detectors and data-flow signals</strong></div>
+          <div><span>Symbolic Execution</span><strong>path constraints for suspicious control flow</strong></div>
+          <div><span>Fuzzing</span><strong>runtime traces from generated call sequences</strong></div>
         </div>
         <div class="section-copy pipeline-copy reveal">
-          <p class="eyebrow">Pipeline</p>
-          <h2>How a Chainvet scan moves through the engine.</h2>
-          <p>This section is the implementation view: Chainvet loads Solidity, schedules the hybrid checks, correlates overlapping output, and hands the same result set to the Web UI, VS Code extension, CLI, and report generator.</p>
+          <p class="eyebrow">Hybrid Pipeline</p>
+          <h2>Three analysis techniques working as one pass.</h2>
+          <p>Chainvet’s core advantage is the hybrid approach: static analysis quickly maps risky code, symbolic execution reasons about whether suspicious paths are feasible, and fuzzing exercises concrete transaction sequences to add runtime evidence.</p>
           <ul class="soft-list pipeline-points">
-            <li>Start from solc metadata when available, with fallback parsing used only to keep imperfect projects analyzable.</li>
-            <li>Promote detector candidates into deeper checks when control flow, value flow, or external calls need more context.</li>
-            <li>Keep downstream surfaces consistent by passing them the same normalized analysis result.</li>
+            <li>Static analysis gives broad coverage over functions, storage writes, calls, values, and known Solidity risk patterns.</li>
+            <li>Symbolic execution adds path context when a warning depends on branch conditions or state transitions.</li>
+            <li>Fuzzing turns selected risk surfaces into executable traces that can support triage and report generation.</li>
           </ul>
         </div>
-        <div class="pipeline-shell reveal" aria-label="Interactive Chainvet pipeline">
+        <div class="pipeline-shell reveal" aria-label="Interactive Chainvet hybrid pipeline">
           <div class="pipeline-status-row" aria-hidden="true">
             <span><b></b>hybrid run</span>
-            <span>contracts/model</span>
-            <span>findings/report</span>
+            <span>static analysis</span>
+            <span>symbolic execution</span>
+            <span>fuzzing</span>
           </div>
-          <div class="pipeline-tabs" role="tablist" aria-label="Pipeline stages">
-            <button class="stage-tab active" data-stage="detector" type="button" role="tab" aria-selected="true"><span>01</span><strong>Frontend & detectors</strong><small>parse, map, flag</small></button>
-            <button class="stage-tab" data-stage="path" type="button" role="tab" aria-selected="false"><span>02</span><strong>Symbolic reasoning</strong><small>check path feasibility</small></button>
-            <button class="stage-tab" data-stage="runtime" type="button" role="tab" aria-selected="false"><span>03</span><strong>Fuzz evidence</strong><small>exercise behavior</small></button>
-            <button class="stage-tab" data-stage="surface" type="button" role="tab" aria-selected="false"><span>04</span><strong>Surface & report</strong><small>dedupe, explain, export</small></button>
+          <div class="pipeline-tabs" role="tablist" aria-label="Hybrid analysis techniques">
+            <button class="stage-tab active" data-stage="static" type="button" role="tab" aria-selected="true"><span>01</span><strong>Static Analysis</strong><small>map risk patterns</small></button>
+            <button class="stage-tab" data-stage="symbolic" type="button" role="tab" aria-selected="false"><span>02</span><strong>Symbolic Execution</strong><small>reason about paths</small></button>
+            <button class="stage-tab" data-stage="fuzzing" type="button" role="tab" aria-selected="false"><span>03</span><strong>Fuzzing</strong><small>exercise behavior</small></button>
           </div>
           <div class="stage-display" aria-live="polite">
             <div class="stage-narrative">
-              <span id="stage-kicker">01 / Frontend & detectors</span>
-              <h3 id="stage-title">Load the project into a usable contract model.</h3>
-              <p id="stage-copy">The scan begins by resolving Solidity structure, source spans, functions, and call sites. Compiler output is preferred; fallback parsing fills enough structure to keep analysis moving when solc is unavailable.</p>
+              <span id="stage-kicker">01 / Static Analysis</span>
+              <h3 id="stage-title">Start broad with source-level detectors.</h3>
+              <p id="stage-copy">Static analysis builds the first risk map from Solidity structure: functions, modifiers, storage writes, external calls, value transfers, and known vulnerability patterns.</p>
               <div class="stage-insights" id="stage-insights">
                 <span>source spans and function map</span>
-                <span>imports and pragma context</span>
-                <span>detector candidates queued</span>
+                <span>detectors for known risk patterns</span>
+                <span>candidates queued for deeper checks</span>
               </div>
             </div>
             <div class="stage-terminal" aria-label="Stage output preview">
-              <div class="stage-terminal-top"><span></span><span></span><span></span><strong>chainvet pipeline</strong></div>
-              <pre id="stage-code"><code>parse     source model ready
-map       functions and call sites
-queue     detector candidates</code></pre>
+              <div class="stage-terminal-top"><span></span><span></span><span></span><strong>chainvet hybrid</strong></div>
+              <pre id="stage-code"><code>static    map contracts/functions
+scan      calls, storage, values
+queue     candidate risk surfaces</code></pre>
             </div>
           </div>
         </div>

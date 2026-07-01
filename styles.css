@@ -50,7 +50,7 @@ h3 { margin: 0; font-family: 'Outfit', sans-serif; font-size: 22px; font-weight:
 .pipeline-section { position: relative; display: grid; grid-template-columns: minmax(330px, .72fr) minmax(540px, 1.28fr); gap: clamp(30px, 5vw, 76px); align-items: center; overflow: hidden; }
 .pipeline-summary { position: relative; z-index: 1; margin-bottom: clamp(26px, 4vw, 46px); background: linear-gradient(135deg, rgba(24,24,37,.72), rgba(49,50,68,.34)); box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 24px 80px rgba(0,0,0,.16); }
 .pipeline-summary div { min-height: 126px; border: 1px solid rgba(205,214,244,.09); background: linear-gradient(180deg, rgba(49,50,68,.52), rgba(24,24,37,.62)); }
-.pipeline-summary span { color: var(--teal); font-size: clamp(24px, 2.8vw, 38px); }
+.pipeline-summary span { color: var(--teal); font-size: clamp(23px, 2.5vw, 34px); }
 .pipeline-copy { position: relative; z-index: 1; }
 .pipeline-points { margin-top: 24px; }
 .pipeline-points li { color: var(--muted); }
@@ -58,7 +58,7 @@ h3 { margin: 0; font-family: 'Outfit', sans-serif; font-size: 22px; font-weight:
 .pipeline-status-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; padding: 10px 12px; border: 1px solid rgba(205,214,244,.10); border-radius: 18px; background: rgba(17,17,27,.52); color: var(--muted); font: 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: .06em; }
 .pipeline-status-row span { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .pipeline-status-row b { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(166,227,161,.11); }
-.pipeline-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.pipeline-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
 .stage-tab { min-height: 98px; display: grid; align-content: start; gap: 7px; padding: 14px; border: 1px solid rgba(205,214,244,.12); border-radius: 20px; background: linear-gradient(180deg, rgba(49,50,68,.42), rgba(24,24,37,.44)); color: var(--muted); text-align: left; font-weight: 800; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,.03); }
 .stage-tab span { width: fit-content; padding: 4px 7px; border-radius: 999px; background: rgba(137,180,250,.12); color: var(--blue); font: 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .stage-tab strong { color: var(--text); font-size: 13px; line-height: 1.15; }
