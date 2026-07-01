@@ -498,25 +498,61 @@ document.querySelectorAll('.reveal').forEach((node) => {
 });
 
 const stages = {
-  detector: { kicker: '01 / Detector layer', title: 'Compiler-aware structure first.', copy: 'Chainvet starts with Solidity structure, compiler metadata, and fallback parsing so later checks have a consistent view of contracts and functions.', code: 'frontend: Solidity structure\nfallback: parser hints\noutput: normalized contracts' },
-  path: { kicker: '02 / Path reasoning', title: 'Suspicious flows get deeper attention.', copy: 'The hybrid pipeline follows risky branches and state transitions around functions that look security-sensitive.', code: 'seed: suspicious function\ntrace: branch constraints\nresult: feasible risk path' },
-  runtime: { kicker: '03 / Runtime evidence', title: 'Signals become executable evidence.', copy: 'Runtime traces help distinguish theoretical warnings from externally-triggered behavior such as reentrant callbacks and failed calls.', code: 'input: generated sequence\ntrace: external call + storage\nevidence: callback before finalize' },
-  surface: { kicker: '04 / Surface & report', title: 'One reportable finding set.', copy: 'Chainvet deduplicates findings, suppresses low-signal output, and produces Markdown or styled PDF reports.', code: 'dedupe: file + function + kind\nreview: optional model pass\noutput: audit report' }
+  detector: {
+    kicker: '01 / Frontend & detectors',
+    title: 'Build the contract view before judging it.',
+    copy: 'Chainvet prefers solc output for structure and source spans, then uses fallback parsing when compiler resolution fails so detectors still receive a normalized contract model.',
+    code: 'frontend  solc ast loaded\nfallback  standby parser available\ndetector  candidates mapped to source',
+    facts: ['solc AST when available', 'fallback parser coverage', 'rule candidates with source spans']
+  },
+  path: {
+    kicker: '02 / Symbolic reasoning',
+    title: 'Follow suspicious control flow, not every branch.',
+    copy: 'Static candidates seed deeper checks. The symbolic layer reasons about branch constraints, state updates, and external-call ordering around security-sensitive functions.',
+    code: 'seed      reentrancy candidate\nconstraints  balance > 0 && call succeeds\npath      external call before state update',
+    facts: ['constraint-aware path checks', 'state transition context', 'feasibility signal for triage']
+  },
+  runtime: {
+    kicker: '03 / Fuzz evidence',
+    title: 'Turn possible issues into observed behavior.',
+    copy: 'The fuzzing layer exercises generated call sequences and records traces that can support findings such as reentrant callbacks, unchecked external calls, and value-flow edge cases.',
+    code: 'sequence  deposit -> withdraw -> callback\ntrace     external call reached\nevidence  storage update after transfer',
+    facts: ['runtime traces', 'coverage and corpus context', 'PoC-oriented evidence']
+  },
+  surface: {
+    kicker: '04 / Surface & report',
+    title: 'Ship one clean finding set.',
+    copy: 'Chainvet correlates overlapping signals, suppresses low-signal duplicates, assigns severity and tier context, then exports the same result set to the UI, extension, CLI, Markdown, and PDF reports.',
+    code: 'merge     detector + path + runtime\nfilter    duplicate / low-signal output\nexport    cli table + md/pdf report',
+    facts: ['deduplicated findings', 'severity and confidence context', 'report-ready PoC and remediation']
+  }
 };
 const stageTabs = document.querySelectorAll('.stage-tab');
 const stageKicker = document.querySelector('#stage-kicker');
 const stageTitle = document.querySelector('#stage-title');
 const stageCopy = document.querySelector('#stage-copy');
 const stageCode = document.querySelector('#stage-code code');
+const stageInsights = document.querySelector('#stage-insights');
 stageTabs.forEach((tab) => {
   tab.addEventListener('click', () => {
     const stage = stages[tab.dataset.stage];
     if (!stage) return;
-    stageTabs.forEach((item) => item.classList.toggle('active', item === tab));
+    stageTabs.forEach((item) => {
+      const active = item === tab;
+      item.classList.toggle('active', active);
+      item.setAttribute('aria-selected', String(active));
+    });
     stageKicker.textContent = stage.kicker;
     stageTitle.textContent = stage.title;
     stageCopy.textContent = stage.copy;
     stageCode.textContent = stage.code;
+    if (stageInsights) {
+      stageInsights.replaceChildren(...stage.facts.map((fact) => {
+        const item = document.createElement('span');
+        item.textContent = fact;
+        return item;
+      }));
+    }
   });
 });
 

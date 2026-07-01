@@ -672,32 +672,50 @@ balances[msg.sender] = 0;</pre>
 
       <section class="section pipeline-section" id="pipeline">
         <canvas class="section-canvas" id="canvas-pipeline"></canvas>
-        <div class="intro-band reveal" aria-label="Core pillars">
-          <div><span>Static analysis</span><strong>compiler-aware detection</strong></div>
-          <div><span>Symbolic execution</span><strong>path reasoning & constraints</strong></div>
-          <div><span>Fuzzing</span><strong>runtime evidence & PoC</strong></div>
+        <div class="intro-band pipeline-summary reveal" aria-label="Pipeline summary">
+          <div><span>Frontend</span><strong>solc AST first, fallback parser when needed</strong></div>
+          <div><span>Hybrid core</span><strong>static rules, path checks, fuzz traces</strong></div>
+          <div><span>Evidence</span><strong>deduped findings, PoC context, reports</strong></div>
         </div>
-        <div class="section-copy reveal">
+        <div class="section-copy pipeline-copy reveal">
           <p class="eyebrow">Pipeline</p>
-          <h2>Hybrid analysis is the advantage.</h2>
-          <p>Our engine runs multiple verification layers in a single pass. When compiler configurations fail, a robust AI fallback parser continues scanning automatically to prevent workflow interruptions.</p>
+          <h2>From Solidity source to evidence-backed findings.</h2>
+          <p>Chainvet builds a contract model, runs static detectors, deepens suspicious paths with symbolic reasoning and fuzzing, then merges the signals into report-ready findings. If solc cannot be resolved, fallback parsing keeps the scan useful instead of stopping the workflow.</p>
+          <ul class="soft-list pipeline-points">
+            <li>Prefer compiler metadata when available; fall back gracefully when project setup or network access gets in the way.</li>
+            <li>Use the hybrid engines together so a finding can carry source location, feasibility, runtime evidence, and severity context.</li>
+            <li>Normalize duplicate or low-signal output before it reaches the Web UI, VS Code extension, CLI table, or generated report.</li>
+          </ul>
         </div>
-        <div class="pipeline-shell reveal">
+        <div class="pipeline-shell reveal" aria-label="Interactive Chainvet pipeline">
+          <div class="pipeline-status-row" aria-hidden="true">
+            <span><b></b>hybrid run</span>
+            <span>contracts/model</span>
+            <span>findings/report</span>
+          </div>
           <div class="pipeline-tabs" role="tablist" aria-label="Pipeline stages">
-            <button class="stage-tab active" data-stage="detector" type="button">Detector layer</button>
-            <button class="stage-tab" data-stage="path" type="button">Path reasoning</button>
-            <button class="stage-tab" data-stage="runtime" type="button">Runtime evidence</button>
-            <button class="stage-tab" data-stage="surface" type="button">Surface & report</button>
+            <button class="stage-tab active" data-stage="detector" type="button" role="tab" aria-selected="true"><span>01</span><strong>Frontend & detectors</strong><small>parse, map, flag</small></button>
+            <button class="stage-tab" data-stage="path" type="button" role="tab" aria-selected="false"><span>02</span><strong>Symbolic reasoning</strong><small>check path feasibility</small></button>
+            <button class="stage-tab" data-stage="runtime" type="button" role="tab" aria-selected="false"><span>03</span><strong>Fuzz evidence</strong><small>exercise behavior</small></button>
+            <button class="stage-tab" data-stage="surface" type="button" role="tab" aria-selected="false"><span>04</span><strong>Surface & report</strong><small>dedupe, explain, export</small></button>
           </div>
           <div class="stage-display" aria-live="polite">
-            <div>
-              <span id="stage-kicker">01 / Detector layer</span>
-              <h3 id="stage-title">Compiler-aware structure first.</h3>
-              <p id="stage-copy">Chainvet starts with Solidity structure, compiler metadata, and fallback parsing so later checks have a consistent view of contracts and functions.</p>
+            <div class="stage-narrative">
+              <span id="stage-kicker">01 / Frontend & detectors</span>
+              <h3 id="stage-title">Build the contract view before judging it.</h3>
+              <p id="stage-copy">Chainvet prefers solc output for structure and source spans, then uses fallback parsing when compiler resolution fails so detectors still receive a normalized contract model.</p>
+              <div class="stage-insights" id="stage-insights">
+                <span>solc AST when available</span>
+                <span>fallback parser coverage</span>
+                <span>rule candidates with source spans</span>
+              </div>
             </div>
-            <pre id="stage-code"><code>frontend: Solidity structure
-fallback: parser hints
-output: normalized contracts</code></pre>
+            <div class="stage-terminal" aria-label="Stage output preview">
+              <div class="stage-terminal-top"><span></span><span></span><span></span><strong>chainvet pipeline</strong></div>
+              <pre id="stage-code"><code>frontend  solc ast loaded
+fallback  standby parser available
+detector  candidates mapped to source</code></pre>
+            </div>
           </div>
         </div>
       </section>
