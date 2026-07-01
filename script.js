@@ -96,6 +96,24 @@ function canScrollWithin(target, deltaY) {
   return false;
 }
 
+function isInsideMockupSurface(target) {
+  const node = target instanceof Element ? target : target?.parentElement;
+  if (!node) return false;
+
+  return Boolean(node.closest([
+    '.interfaces-slider',
+    '.webui-replica',
+    '.vscode-window',
+    '.terminal-window',
+    '.comparison-slider',
+    '.comp-panel',
+    '.pipeline-shell',
+    '.cicd-visual',
+    '.pdf-device',
+    '.hero-console'
+  ].join(',')));
+}
+
 function activePageIndex() {
   if (!pageSections.length) return -1;
   const anchor = window.innerHeight * 0.42;
@@ -171,6 +189,7 @@ window.addEventListener('wheel', (event) => {
   if (!pageSections.length) return;
   if (event.ctrlKey || event.metaKey || event.shiftKey) return;
   if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+  if (isInsideMockupSurface(event.target)) return;
   if (canScrollWithin(event.target, event.deltaY)) return;
 
   const current = activePageIndex();
