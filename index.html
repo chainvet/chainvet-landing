@@ -497,21 +497,21 @@ target: ./reentrance.sol    mode: hybrid
 static targets 1/1  ·  symbolic findings 3 (10 states)  ·  fuzz coverage 87.5% (1 corpus)
 
 Findings (8)
-┌──────────┬──────────────────────────────┬──────────────────┬───────────┬────────────────────────────────────────────┐
-│ Severity ┆ Kind                         ┆ Location         ┆ Tier      ┆ Message                                    │
-╞══════════╪══════════════════════════════╪══════════════════╪═══════════╪════════════════════════════════════════════╡
+┌──────────┬──────────────────────────────┬───────────────────┬───────────┬────────────────────────────────────────────┐
+│ Severity ┆ Kind                         ┆ Location          ┆ Tier      ┆ Message                                    │
+╞══════════╪══════════════════════════════╪═══════════════════╪═══════════╪════════════════════════════════════════════╡
 │ <span class="term-high">HIGH</span>     ┆ arbitrary-storage-write      ┆ reentrance.sol:27 ┆ <span class="term-confirmed">confirmed</span> ┆ Storage write at user-controlled index may │
-│          ┆                              ┆                  ┆           ┆ overwrite arbitrary …                      │
-├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│          ┆                              ┆                   ┆           ┆ overwrite arbitrary …                      │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
 │ <span class="term-high">HIGH</span>     ┆ reentrancy                   ┆ reentrance.sol:21 ┆ <span class="term-confirmed">confirmed</span> ┆ Reentrancy: state written after external   │
-│          ┆                              ┆                  ┆           ┆ call violates CEI patt…                    │
-├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│          ┆                              ┆                   ┆           ┆ call violates CEI patt…                    │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
 │ <span class="term-high">HIGH</span>     ┆ reentrancy-eth-transfer      ┆ reentrance.sol:21 ┆ <span class="term-candidate">candidate</span> ┆ RE-04: reentrancy in `withdraw`: state     │
-│          ┆                              ┆                  ┆           ┆ variable is read before …                  │
-├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
-│ <span class="term-medium">MEDIUM</span>   ┆ unchecked-call               ┆ -                ┆ <span class="term-confirmed">confirmed</span> ┆ Unchecked external call to `$t5` in        │
-│          ┆                              ┆                  ┆           ┆ function 2 — return value n…               │
-└──────────┴──────────────────────────────┴──────────────────┴───────────┴────────────────────────────────────────────┘
+│          ┆                              ┆                   ┆           ┆ variable is read before …                  │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ <span class="term-medium">MEDIUM</span>   ┆ unchecked-call               ┆ -                 ┆ <span class="term-confirmed">confirmed</span> ┆ Unchecked external call to `$t5` in        │
+│          ┆                              ┆                   ┆           ┆ function 2 — return value n…               │
+└──────────┴──────────────────────────────┴───────────────────┴───────────┴────────────────────────────────────────────┘
   <span class="term-high">4 high</span> · <span class="term-medium">4 medium</span> · <span class="term-low">0 low</span>      <span class="term-confirmed">4 confirmed</span> · <span class="term-candidate">4 candidate</span></code></pre>
               </div>
             </div>
