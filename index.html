@@ -619,12 +619,12 @@ analysis continues</pre>
               </div>
             </div>
             <div class="section-copy slide-text comparison-copy">
-              <p class="eyebrow">Rust workflow</p>
-              <h3>Average-time results support the Rust-first hybrid design.</h3>
-              <p>In the updated benchmark comparison, Chainvet records a 5.8 second average analysis time. Smartcheck is marginally faster at 5.7s, but Chainvet stays in the same speed band while running a hybrid workflow instead of a purely static one.</p>
+              <p class="eyebrow">Rust-speed hybrid analysis</p>
+              <h3>Depth should not make the audit loop feel heavy.</h3>
+              <p>Chainvet keeps the full hybrid pipeline responsive, landing at 5.8s in this benchmark while combining static analysis, symbolic reasoning, and fuzzing into one pass.</p>
               <div class="compare-block refined">
-                <div class="market-side"><b>Baseline spread</b><span>The listed baselines range from 5.7s for Smartcheck to 2548.10s for Manticore in this run.</span></div>
-                <div class="chainvet-side"><b>Chainvet result</b><span>Chainvet is shown at 5.8s, which keeps the Rust hybrid engine close to the fastest listed static baseline.</span></div>
+                <div class="market-side"><b>Static-speed target</b><span>The fastest listed static baseline lands at 5.7s in this run.</span></div>
+                <div class="chainvet-side"><b>Hybrid result</b><span>Chainvet stays within the same speed band while adding path and runtime evidence.</span></div>
               </div>
             </div>
           </div>
