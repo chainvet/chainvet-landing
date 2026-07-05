@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chainvet - Hybrid Smart Contract Auditor</title>
-    <meta name="description" content="Chainvet is a hybrid Solidity security analyzer combining static analysis, symbolic execution, fuzzing, report generation, editor integration, CI/CD workflows, and a local Web UI.">
+    <meta name="description" content="Chainvet helps Solidity teams scan contracts, review findings, and export audit-ready reports from the CLI, Web UI, VS Code, and CI.">
     <meta property="og:title" content="Chainvet - Hybrid Smart Contract Auditor">
-    <meta property="og:description" content="Hybrid Solidity security analysis with audit-ready reports and an editor-first workflow.">
+    <meta property="og:description" content="Hybrid Solidity auditing with practical findings, reports, and editor-first workflows.">
     <meta property="og:image" content="assets/Horizontal.png">
     <meta name="theme-color" content="#1e1e2e">
     <link rel="icon" href="assets/chainvet-logo.ico" type="image/x-icon">
@@ -59,15 +59,15 @@
           <canvas id="hero-canvas"></canvas>
         </div>
         <div class="hero-content reveal">
-          <p class="eyebrow">Hybrid Solidity auditing</p>
+          <p class="eyebrow">Hybrid Solidity audits</p>
           <h1>Chainvet<span class="hero-tagline">Hybrid Smart Contract Auditor</span></h1>
-          <p class="hero-copy">Security tools often force auditors to choose between deeper execution and overwhelming noise. Chainvet reduces that friction by combining static detectors, symbolic path reasoning, and runtime fuzzing into one unified finding workflow.</p>
+          <p class="hero-copy">Scan Solidity projects with a hybrid engine that combines fast detectors, path reasoning, and fuzzing, then turns the results into findings you can review and report.</p>
           <div class="hero-actions">
             <a class="button primary" href="https://github.com/chainvet/chainvet">
-              View repository
+              Open GitHub
               <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" style="margin-left: 8px;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
             </a>
-            <a class="button secondary" href="#reports">Explore report output</a>
+            <a class="button secondary" href="#reports">View sample report</a>
           </div>
         </div>
         <aside class="hero-console reveal" aria-label="Chainvet terminal preview">
@@ -87,14 +87,14 @@
           <div class="console-body" id="console-run" style="display:none">
             <p><em>$</em> chainvet scan ./contracts</p>
             <p><b>frontend</b> Solidity structure loaded</p>
-            <p><b>pipeline</b> detector + path + runtime evidence</p>
+            <p><b>pipeline</b> static + path + fuzzing context</p>
             <p><b>report</b> PDF and Markdown ready</p>
           </div>
         </aside>
         <div class="hero-strip" aria-label="Chainvet highlights">
-          <span><strong>Fast local</strong> analysis loops</span>
-          <span><strong>Precision-focused</strong> triage filters</span>
-          <span><strong>Report-ready</strong> audit output</span>
+          <span><strong>Fast local</strong> scans</span>
+          <span><strong>Hybrid</strong> finding context</span>
+          <span><strong>PDF + Markdown</strong> reports</span>
         </div>
       </section>
 
@@ -103,8 +103,8 @@
         
         <div class="section-copy compact reveal">
           <p class="eyebrow">Ecosystem</p>
-          <h2>Chainvet Ecosystem</h2>
-          <p>Use Chainvet from the local Web UI, the VS Code extension, or the CLI while keeping the same hybrid analysis and report workflow.</p>
+          <h2>Use Chainvet your way.</h2>
+          <p>Run scans from the Web UI, VS Code, or CLI. The findings, details, and reports stay consistent everywhere.</p>
           
           <div class="interface-tabs" role="tablist" aria-label="Chainvet ecosystem surfaces">
             <button class="interface-tab active" data-tab="webui" role="tab" aria-selected="true" type="button" aria-label="Web UI" title="Web UI">
@@ -138,7 +138,7 @@
               <div class="mini-findings">
                 <span class="high">High</span>
                 <strong>Reentrancy in withdraw()</strong>
-                <small>runtime evidence + source span</small>
+                <small>trace + source span</small>
               </div>
               <div class="mini-actions"><span>PDF</span><span>MD</span><span>Details</span></div>
             </div>
@@ -238,7 +238,7 @@
 
                 <main class="webui-pane webui-findings">
                   <header>
-                    <div><span>bug_report</span><strong>Findings</strong><em>surfaced · 03</em></div>
+                    <div><span>bug_report</span><strong>Findings</strong><em>ready · 03</em></div>
                     <div class="webui-chips"><b>1 high</b><b>1 medium</b><b>1 low</b></div>
                     <label class="webui-search"><span>search</span><input value="reentrancy" aria-label="Filter findings" readonly></label>
                   </header>
@@ -265,7 +265,7 @@
 balances[msg.sender] = 0;</code></pre>
                   </article>
                   <section class="webui-warning-box">
-                    <strong>Analyzer warnings</strong>
+                    <strong>Run notes</strong>
                     <p>No warnings for this target.</p>
                   </section>
                 </aside>
@@ -273,12 +273,12 @@ balances[msg.sender] = 0;</code></pre>
             </div>
             <div class="section-copy slide-text">
               <p class="eyebrow">Web UI</p>
-              <h3>The same local Web UI, shown as a working audit surface.</h3>
-              <p>Browse the target workspace, run hybrid analysis, inspect surfaced findings, and open details without leaving the local Web UI.</p>
+              <h3>Run audits from a local workspace.</h3>
+              <p>Pick a target, scan it, filter findings, and export reports from the browser.</p>
               <ul class="soft-list">
-                <li>Navigate workspace folders and Solidity files visually.</li>
-                <li>Filter surfaced findings by severity, kind, function, or file.</li>
-                <li>Export PDF and Markdown reports directly from the runbar.</li>
+                <li>Browse contracts and Solidity files visually.</li>
+                <li>Filter findings by severity, kind, function, or file.</li>
+                <li>Export PDF and Markdown reports from the runbar.</li>
               </ul>
             </div>
           </div>
@@ -460,9 +460,9 @@ balances[msg.sender] = 0;</pre>
                     <pre id="vscode-output">▶ Chainvet: Analyze Current File
 $ chainvet --hybrid Reentrancy.sol --json
   frontend   Solidity structure loaded
-  pipeline   detector + path + runtime evidence
-  surface    deduplicate &amp; suppress low-signal
-✓ 3 findings surfaced (1 high · 1 medium · 1 low)
+  pipeline   static + path + fuzzing context
+  triage     merge duplicates and quiet noisy leads
+✓ 3 findings ready (1 high · 1 medium · 1 low)
 ✓ diagnostics updated</pre>
                   </div>
                   <div class="statusbar"><span class="statusbar-chainvet"><svg viewBox="0 0 16 16"><path d="M8 1.5l6.5 3.7v5.6L8 14.5l-6.5-3.7V5.2L8 1.5Zm0 1.7L3 6.3v3.4L8 12.8l5-3.1V6.3L8 3.2Z" fill="currentColor"/></svg> Chainvet</span><span>Solidity</span><span>UTF-8</span><span>Ln 12, Col 5</span></div>
@@ -471,8 +471,8 @@ $ chainvet --hybrid Reentrancy.sol --json
             </div>
             <div class="section-copy slide-text">
               <p class="eyebrow">VS Code extension</p>
-              <h3>Run the workflow from the editor.</h3>
-              <p>The extension keeps diagnostics, target selection, report generation, and finding details close to the editor.</p>
+              <h3>Review findings where the code lives.</h3>
+              <p>The extension keeps scans, diagnostics, report actions, and finding details inside VS Code.</p>
               <ul class="soft-list">
                 <li>Analyze the active file, workspace, or a selected folder.</li>
                 <li>Jump from a finding to its source location.</li>
@@ -517,12 +517,12 @@ Findings (4)
             </div>
             <div class="section-copy slide-text">
               <p class="eyebrow">CLI Tool</p>
-              <h3>A normal terminal run, built around chainvet scan.</h3>
-              <p>The CLI runs the hybrid analyzer by default and prints the same severity, tier, location, and finding totals used by the report flow.</p>
+              <h3>Use the same scanner from scripts and terminals.</h3>
+              <p>The CLI prints clean finding tables for humans and structured output for automation.</p>
               <ul class="soft-list">
                 <li>Scan one Solidity file or an entire project directory.</li>
                 <li>Use pretty terminal output for humans or JSON for automation.</li>
-                <li>Apply severity filters and time caps from scripts or CI jobs.</li>
+                <li>Set severity filters and time caps from scripts or CI jobs.</li>
               </ul>
             </div>
           </div>
@@ -532,38 +532,38 @@ Findings (4)
       <section class="section comparison-section" id="comparison">
         <canvas class="section-canvas" id="canvas-comparison"></canvas>
         <div class="section-copy compact reveal comparison-intro">
-          <p class="eyebrow">Design Comparison</p>
-          <h2>Where Chainvet is designed to differ.</h2>
-          <p>Smart contract scanners often trade depth, compiler compatibility, runtime cost, or finding structure against each other. This section shows the product choices Chainvet makes to reduce those tradeoffs.</p>
+          <p class="eyebrow">Why Chainvet</p>
+          <h2>Built for audit flow, not alert dumps.</h2>
+          <p>Chainvet combines multiple engines, keeps scans moving when projects are messy, and turns results into findings that are easier to review, explain, and report.</p>
 
           <div class="comparison-tabs" role="tablist" aria-label="Comparison points">
-            <button class="comparison-tab active" data-tab="hybrid" role="tab" aria-selected="true" type="button"><span>01</span>Hybrid Evidence</button>
-            <button class="comparison-tab" data-tab="fallback" role="tab" aria-selected="false" type="button"><span>02</span>Parser Recovery</button>
-            <button class="comparison-tab" data-tab="performance" role="tab" aria-selected="false" type="button"><span>03</span>Rust Workflow</button>
-            <button class="comparison-tab" data-tab="taxonomy" role="tab" aria-selected="false" type="button"><span>04</span>Audit-Ready Findings</button>
+            <button class="comparison-tab active" data-tab="hybrid" role="tab" aria-selected="true" type="button"><span>01</span>Hybrid Engine</button>
+            <button class="comparison-tab" data-tab="fallback" role="tab" aria-selected="false" type="button"><span>02</span>Fallback Parsing</button>
+            <button class="comparison-tab" data-tab="performance" role="tab" aria-selected="false" type="button"><span>03</span>Speed</button>
+            <button class="comparison-tab" data-tab="taxonomy" role="tab" aria-selected="false" type="button"><span>04</span>Reports</button>
           </div>
         </div>
 
         <div class="comparison-slider reveal">
           <div class="comparison-slide active" id="comp-slide-hybrid" role="tabpanel">
             <div class="comp-visual comp-panel hybrid-panel" aria-label="Hybrid evidence loop visual">
-              <div class="comp-panel-top"><span>evidence loop</span><strong>Static + Runtime + Solver</strong></div>
+              <div class="comp-panel-top"><span>hybrid run</span><strong>Static + Fuzzing + Symbolic</strong></div>
               <div class="hybrid-loop-visual">
-                <div class="loop-node static-node"><i>01</i><strong>Static map</strong><span>detectors, sinks, entry points</span></div>
+                <div class="loop-node static-node"><i>01</i><strong>Static scan</strong><span>detectors, sinks, entry points</span></div>
                 <div class="loop-arrow" aria-hidden="true"></div>
-                <div class="loop-node fuzz-node active"><i>02</i><strong>Runtime probe</strong><span>coverage and concrete traces</span></div>
+                <div class="loop-node fuzz-node active"><i>02</i><strong>Fuzz run</strong><span>coverage and concrete traces</span></div>
                 <div class="loop-arrow" aria-hidden="true"></div>
-                <div class="loop-node symbolic-node"><i>03</i><strong>Path assist</strong><span>constraints for blocked paths</span></div>
+                <div class="loop-node symbolic-node"><i>03</i><strong>Path check</strong><span>branch and state context</span></div>
               </div>
               <div class="comp-signal-row"><span></span><span></span><span></span></div>
             </div>
             <div class="section-copy slide-text comparison-copy">
-              <p class="eyebrow">Hybrid evidence</p>
-              <h3>The main difference is signal cooperation.</h3>
-              <p>Many analyzers are built around one dominant technique. Chainvet’s design point is that static, runtime, and solver signals can support each other instead of competing for the auditor’s attention.</p>
+              <p class="eyebrow">Hybrid engine</p>
+              <h3>One finding can carry more than one signal.</h3>
+              <p>Static checks find suspicious code quickly. Fuzzing and symbolic reasoning add context where it matters, so findings are easier to trust and explain.</p>
               <div class="compare-block refined">
-                <div class="market-side"><b>Technique-first scanner</b><span>The output often reflects one engine’s view of the contract, leaving the auditor to connect missing context manually.</span></div>
-                <div class="chainvet-side"><b>Chainvet direction</b><span>Each layer contributes a different kind of context before the result is presented to the user.</span></div>
+                <div class="market-side"><b>Single-engine output</b><span>Alerts often need extra manual work before they are ready to explain.</span></div>
+                <div class="chainvet-side"><b>Chainvet</b><span>Combines static, fuzzing, and symbolic context before a finding reaches you.</span></div>
               </div>
             </div>
           </div>
@@ -573,14 +573,14 @@ Findings (4)
               <div class="comp-panel-top"><span>frontend resilience</span><strong>Compile when possible, recover when needed</strong></div>
               <div class="fallback-split-visual">
                 <div class="fallback-pane error-pane">
-                  <div class="pane-header"><span></span>Compiler-only path</div>
+                  <div class="pane-header"><span></span>Compiler-only scan</div>
                   <pre class="pane-code">missing import
 version mismatch
 analysis paused</pre>
                 </div>
                 <div class="fallback-bridge" aria-hidden="true"><span></span></div>
                 <div class="fallback-pane success-pane">
-                  <div class="pane-header"><span></span>Chainvet fallback path</div>
+                  <div class="pane-header"><span></span>Chainvet fallback</div>
                   <pre class="pane-code green-text">tree structure recovered
 contracts indexed
 analysis continues</pre>
@@ -588,50 +588,50 @@ analysis continues</pre>
               </div>
             </div>
             <div class="section-copy slide-text comparison-copy">
-              <p class="eyebrow">Parser recovery</p>
-              <h3>Analysis should degrade gracefully.</h3>
-              <p>Real repositories are not always compiler-clean: imports move, versions differ, and partial files appear during development. Chainvet keeps a fallback parser path so scans can still produce useful structure.</p>
+              <p class="eyebrow">Fallback parsing</p>
+              <h3>Compiler issues should not stop the scan.</h3>
+              <p>Imports break. Versions drift. Repos are messy. Chainvet uses solc when it can, then falls back to recovered Solidity structure when it cannot.</p>
               <div class="compare-block refined">
-                <div class="market-side"><b>Compiler-bound workflow</b><span>A single frontend failure can stop the scan before detectors see the source.</span></div>
-                <div class="chainvet-side"><b>Chainvet direction</b><span>Prefer compiler structure, then fall back to recovered Solidity structure when compilation is not available.</span></div>
+                <div class="market-side"><b>Compiler-bound scan</b><span>One missing dependency can block the whole run.</span></div>
+                <div class="chainvet-side"><b>Chainvet</b><span>Uses compiler structure first, then recovers enough shape to keep working.</span></div>
               </div>
             </div>
           </div>
 
           <div class="comparison-slide" id="comp-slide-performance" role="tabpanel" style="display: none;">
-            <div class="comp-visual comp-panel performance-panel" aria-label="Average analysis time benchmark visual">
-              <div class="comp-panel-top"><span>average analysis time</span><strong>Benchmark comparison · seconds</strong></div>
-              <div class="time-board" aria-label="Average analysis time values from the benchmark comparison">
+            <div class="comp-visual comp-panel performance-panel" aria-label="Average scan time visual">
+              <div class="comp-panel-top"><span>average scan time</span><strong>Latest run · seconds</strong></div>
+              <div class="time-board" aria-label="Average scan time values">
                 <div class="time-hero">
                   <span>Chainvet</span>
                   <strong>5.8s</strong>
-                  <small>hybrid engine · Rust · within 0.1s of the fastest listed baseline</small>
+                  <small>hybrid engine · Rust · near static-tool speed</small>
                 </div>
                 <div class="time-bars">
                   <div class="time-row fastest"><b>Smartcheck<small>static analysis · Java</small></b><span><i style="--w: 12%"></i></span><em>5.7s</em></div>
                   <div class="time-row chainvet"><b>Chainvet<small>hybrid engine · Rust</small></b><span><i style="--w: 12.3%"></i></span><em>5.8s</em></div>
-                  <div class="time-row"><b>Oyente<small>mostly compilation errors · Python</small></b><span><i style="--w: 34%"></i></span><em>25.04s</em></div>
+                  <div class="time-row"><b>Oyente<small>compiler issues · Python</small></b><span><i style="--w: 34%"></i></span><em>25.04s</em></div>
                   <div class="time-row"><b>Slither<small>static analysis · Python</small></b><span><i style="--w: 36%"></i></span><em>28.07s</em></div>
                   <div class="time-row"><b>Mythril<small>symbolic execution · Python</small></b><span><i style="--w: 92%"></i></span><em>1515.22s</em></div>
                   <div class="time-row"><b>Manticore<small>symbolic execution · Python</small></b><span><i style="--w: 100%"></i></span><em>2548.10s</em></div>
                 </div>
-                <p class="time-note">Bar lengths use a compressed scale so fast hybrid/static tools and much slower symbolic tools can fit in one panel.</p>
+                <p class="time-note">Compressed scale keeps the fast tools and slower symbolic tools readable in one panel.</p>
               </div>
             </div>
             <div class="section-copy slide-text comparison-copy">
               <p class="eyebrow">Rust-speed hybrid analysis</p>
               <h3>Depth should not make the audit loop feel heavy.</h3>
-              <p>Chainvet keeps the full hybrid pipeline responsive, landing at 5.8s in this benchmark while combining static analysis, symbolic reasoning, and fuzzing into one pass.</p>
+              <p>Chainvet keeps the full hybrid pipeline responsive: 5.8s in the latest run while combining static checks, symbolic reasoning, and fuzzing in one pass.</p>
               <div class="compare-block refined">
-                <div class="market-side"><b>Static-speed target</b><span>The fastest listed static baseline lands at 5.7s in this run.</span></div>
-                <div class="chainvet-side"><b>Hybrid result</b><span>Chainvet stays within the same speed band while adding path and runtime evidence.</span></div>
+                <div class="market-side"><b>Speed marker</b><span>Smartcheck posts the fastest static-only time at 5.7s.</span></div>
+                <div class="chainvet-side"><b>Hybrid result</b><span>Chainvet stays in the same speed band while adding path and fuzzing context.</span></div>
               </div>
             </div>
           </div>
 
           <div class="comparison-slide" id="comp-slide-taxonomy" role="tabpanel" style="display: none;">
             <div class="comp-visual comp-panel finding-model-panel" aria-label="Audit-ready finding model visual">
-              <div class="comp-panel-top"><span>finding model</span><strong>From raw alerts to report-ready evidence</strong></div>
+              <div class="comp-panel-top"><span>finding workflow</span><strong>From alert to report</strong></div>
               <div class="finding-model" aria-label="Structured Chainvet finding card">
                 <div class="signal-stack" aria-hidden="true">
                   <div class="signal-card muted"><b>static</b><span>unchecked call</span></div>
@@ -655,12 +655,12 @@ balances[msg.sender] = 0;</pre>
               </div>
             </div>
             <div class="section-copy slide-text comparison-copy">
-              <p class="eyebrow">Audit-ready findings</p>
-              <h3>Findings should be useful after detection.</h3>
-              <p>A scanner is only useful if its output can be triaged, reviewed, and turned into a report. Chainvet’s comparison point here is not just category breadth; it is the way raw signals are normalized into evidence-backed findings.</p>
+              <p class="eyebrow">Report-ready findings</p>
+              <h3>A finding should already tell the story.</h3>
+              <p>Chainvet packages the details auditors need most: severity, location, evidence, an exploit path, and remediation guidance.</p>
               <div class="compare-block refined">
-                <div class="market-side"><b>Raw alert output</b><span>Warnings can be technically correct but still require manual effort to group, explain, reproduce, and remediate.</span></div>
-                <div class="chainvet-side"><b>Chainvet direction</b><span>Each surfaced finding is shaped around severity, evidence, source location, exploit explanation, PoC context, and remediation guidance.</span></div>
+                <div class="market-side"><b>Raw alerts</b><span>Warnings still need grouping, explanation, reproduction, and remediation notes.</span></div>
+                <div class="chainvet-side"><b>Chainvet</b><span>Findings are shaped for review first, then exported directly into reports.</span></div>
               </div>
             </div>
           </div>
@@ -670,18 +670,18 @@ balances[msg.sender] = 0;</pre>
       <section class="section pipeline-section" id="pipeline">
         <canvas class="section-canvas" id="canvas-pipeline"></canvas>
         <div class="intro-band pipeline-summary reveal" aria-label="Hybrid analysis techniques">
-          <div><span>Static Analysis</span><strong>fast source-level detectors and data-flow signals</strong></div>
-          <div><span>Symbolic Execution</span><strong>path constraints for suspicious control flow</strong></div>
-          <div><span>Fuzzing</span><strong>runtime traces from generated call sequences</strong></div>
+          <div><span>Static Analysis</span><strong>quickly maps risky code patterns</strong></div>
+          <div><span>Symbolic Execution</span><strong>checks whether suspicious paths can happen</strong></div>
+          <div><span>Fuzzing</span><strong>runs concrete transaction sequences</strong></div>
         </div>
         <div class="section-copy pipeline-copy reveal">
-          <p class="eyebrow">Hybrid Pipeline</p>
-          <h2>Three analysis techniques working as one pass.</h2>
-          <p>Chainvet’s core advantage is the hybrid approach: static analysis quickly maps risky code, symbolic execution reasons about whether suspicious paths are feasible, and fuzzing exercises concrete transaction sequences to add runtime evidence.</p>
+          <p class="eyebrow">Hybrid pipeline</p>
+          <h2>One scan. Three ways to catch risk.</h2>
+          <p>The pipeline starts broad, checks suspicious paths, and runs concrete cases so the final finding has more context than a single alert.</p>
           <ul class="soft-list pipeline-points">
-            <li>Static analysis gives broad coverage over functions, storage writes, calls, values, and known Solidity risk patterns.</li>
-            <li>Symbolic execution adds path context when a warning depends on branch conditions or state transitions.</li>
-            <li>Fuzzing turns selected risk surfaces into executable traces that can support triage and report generation.</li>
+            <li>Static analysis scans functions, storage writes, calls, values, and common Solidity risk patterns.</li>
+            <li>Symbolic execution checks branch and state conditions behind suspicious flows.</li>
+            <li>Fuzzing turns selected risks into concrete traces for triage and reports.</li>
           </ul>
         </div>
         <div class="pipeline-shell reveal" aria-label="Interactive Chainvet hybrid pipeline">
@@ -692,26 +692,26 @@ balances[msg.sender] = 0;</pre>
             <span>fuzzing</span>
           </div>
           <div class="pipeline-tabs" role="tablist" aria-label="Hybrid analysis techniques">
-            <button class="stage-tab active" data-stage="static" type="button" role="tab" aria-selected="true"><span>01</span><strong>Static Analysis</strong><small>map risk patterns</small></button>
-            <button class="stage-tab" data-stage="symbolic" type="button" role="tab" aria-selected="false"><span>02</span><strong>Symbolic Execution</strong><small>reason about paths</small></button>
-            <button class="stage-tab" data-stage="fuzzing" type="button" role="tab" aria-selected="false"><span>03</span><strong>Fuzzing</strong><small>exercise behavior</small></button>
+            <button class="stage-tab active" data-stage="static" type="button" role="tab" aria-selected="true"><span>01</span><strong>Static Analysis</strong><small>map risky code</small></button>
+            <button class="stage-tab" data-stage="symbolic" type="button" role="tab" aria-selected="false"><span>02</span><strong>Symbolic Execution</strong><small>check paths</small></button>
+            <button class="stage-tab" data-stage="fuzzing" type="button" role="tab" aria-selected="false"><span>03</span><strong>Fuzzing</strong><small>run transactions</small></button>
           </div>
           <div class="stage-display" aria-live="polite">
             <div class="stage-narrative">
               <span id="stage-kicker">01 / Static Analysis</span>
-              <h3 id="stage-title">Start broad with source-level detectors.</h3>
-              <p id="stage-copy">Static analysis builds the first risk map from Solidity structure: functions, modifiers, storage writes, external calls, value transfers, and known vulnerability patterns.</p>
+              <h3 id="stage-title">Start with a fast map of risky code.</h3>
+              <p id="stage-copy">Static analysis quickly marks suspicious functions, storage writes, external calls, value transfers, and known Solidity risk patterns.</p>
               <div class="stage-insights" id="stage-insights">
                 <span>source spans and function map</span>
-                <span>detectors for known risk patterns</span>
-                <span>candidates queued for deeper checks</span>
+                <span>known risk pattern checks</span>
+                <span>promising leads sent deeper</span>
               </div>
             </div>
             <div class="stage-terminal" aria-label="Stage output preview">
               <div class="stage-terminal-top"><span></span><span></span><span></span><strong>chainvet hybrid</strong></div>
               <pre id="stage-code"><code>static    map contracts/functions
 scan      calls, storage, values
-queue     candidate risk surfaces</code></pre>
+queue     leads for deeper checks</code></pre>
             </div>
           </div>
         </div>
@@ -720,13 +720,13 @@ queue     candidate risk surfaces</code></pre>
       <section class="section cicd-section" id="cicd">
         <canvas class="section-canvas" id="canvas-cicd"></canvas>
         <div class="section-copy reveal">
-          <p class="eyebrow">CI/CD Integration</p>
-          <h2>Bring repeatable security checks into every commit.</h2>
-          <p>Add security checks to push and pull request pipelines so findings are visible before deployment.</p>
+          <p class="eyebrow">CI/CD integration</p>
+          <h2>Keep contract checks in every pull request.</h2>
+          <p>Run Chainvet in CI so high-severity issues show up before they reach deployment.</p>
           <ul class="soft-list">
-            <li>CI examples for GitHub Actions and GitLab pipelines.</li>
-            <li>Can be configured to fail builds on high-severity findings.</li>
-            <li>Can export PDF reports as pipeline artifacts.</li>
+            <li>GitHub Actions and GitLab examples for common workflows.</li>
+            <li>Fail builds on high-severity findings when you want a hard gate.</li>
+            <li>Upload PDF reports as build artifacts for review.</li>
           </ul>
         </div>
         <div class="cicd-visual reveal">
@@ -776,8 +776,8 @@ queue     candidate risk surfaces</code></pre>
         <canvas class="section-canvas" id="canvas-reports"></canvas>
         <div class="section-copy report-copy reveal">
           <p class="eyebrow">Generated reports</p>
-          <h2>Auditor-ready reports with optional review assistance.</h2>
-          <p>Export audit logs with finding context, exploit explanations, Solidity proof-of-concept snippets, and remediation guidance for review.</p>
+          <h2>Reports that are ready to review.</h2>
+          <p>Export PDF or Markdown reports with finding context, exploit notes, Solidity PoC snippets, and remediation guidance.</p>
           <div class="report-controls" aria-label="Report preview page shortcuts">
             <button class="active" type="button" data-pdf-page="1">Cover</button>
             <button type="button" data-pdf-page="4">Summary</button>
@@ -797,16 +797,16 @@ queue     candidate risk surfaces</code></pre>
 
       <section class="final-cta reveal">
         <img src="assets/Horizontal.svg" alt="Chainvet wordmark">
-        <div><p class="eyebrow">Hybrid audit workflow</p><h2>Install Chainvet and generate your first report.</h2></div>
+        <div><p class="eyebrow">Start auditing</p><h2>Install Chainvet and generate your first report.</h2></div>
         <a class="button primary" href="https://github.com/chainvet/chainvet" aria-label="Open GitHub">
-          Open
+          Open GitHub
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" style="margin-left: 8px;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
         </a>
       </section>
     </main>
 
     <footer class="site-footer">
-      <span>Chainvet: Hybrid smart contract security analysis</span>
+      <span>Chainvet · Hybrid smart contract audits</span>
       <a href="mailto:hello@chainvet.dev">hello@chainvet.dev</a>
     </footer>
     <script src="script.js"></script>

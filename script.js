@@ -399,24 +399,24 @@ document.querySelectorAll('.reveal').forEach((node) => revealObserver.observe(no
 const stages = {
   static: {
     kicker: '01 / Static Analysis',
-    title: 'Start broad with source-level detectors.',
-    copy: 'Static analysis builds the first risk map from Solidity structure: functions, modifiers, storage writes, external calls, value transfers, and known vulnerability patterns.',
-    code: 'static    map contracts/functions\nscan      calls, storage, values\nqueue     candidate risk surfaces',
-    facts: ['source spans and function map', 'detectors for known risk patterns', 'candidates queued for deeper checks']
+    title: 'Start with a fast map of risky code.',
+    copy: 'Static analysis quickly marks suspicious functions, storage writes, external calls, value transfers, and known Solidity risk patterns.',
+    code: 'static    map contracts/functions\nscan      calls, storage, values\nqueue     leads for deeper checks',
+    facts: ['source spans and function map', 'known risk pattern checks', 'promising leads sent deeper']
   },
   symbolic: {
     kicker: '02 / Symbolic Execution',
-    title: 'Reason about paths that static checks cannot prove alone.',
-    copy: 'Symbolic execution focuses on suspicious branches and state transitions, checking whether constraints make risky flows feasible before they are treated as stronger evidence.',
-    code: 'symbolic  select suspicious path\nsolve     branch/state constraints\nmark      feasible execution context',
-    facts: ['branch constraint solving', 'state transition reasoning', 'feasibility context for triage']
+    title: 'Check whether suspicious paths can actually happen.',
+    copy: 'Symbolic execution follows selected branches and state transitions, then checks the conditions behind risky flows.',
+    code: 'symbolic  select suspicious path\nsolve     branch/state checks\nmark      path context',
+    facts: ['branch condition checks', 'state transition context', 'clearer triage notes']
   },
   fuzzing: {
     kicker: '03 / Fuzzing',
-    title: 'Exercise the contract with concrete transaction sequences.',
-    copy: 'Fuzzing generates and mutates call sequences around selected risk surfaces, then records coverage and runtime traces that can support exploit explanations and report evidence.',
-    code: 'fuzz      mutate call sequence corpus\nexecute   transaction harness\nrecord    coverage and runtime traces',
-    facts: ['generated call sequences', 'coverage and runtime traces', 'evidence for PoC and reports']
+    title: 'Run concrete transactions against risky flows.',
+    copy: 'Fuzzing mutates call sequences around selected risks and records traces that make findings easier to reproduce.',
+    code: 'fuzz      mutate call sequences\nexecute   transaction harness\nrecord    coverage and traces',
+    facts: ['generated call sequences', 'coverage and traces', 'PoC and report context']
   }
 };
 const pipelineSection = document.querySelector('.pipeline-section');
@@ -597,8 +597,8 @@ updateVscodeDetail('12');
 
 /* Sidebar toolbar action buttons */
 const actionText = {
-  file:      ['Analysis complete', '▶ Chainvet: Analyze Current File\n$ chainvet --hybrid Reentrancy.sol --json\n  frontend   Solidity structure loaded\n  pipeline   detector + path + runtime evidence\n  surface    deduplicate & suppress low-signal\n✓ 3 findings surfaced (1 high · 1 medium · 1 low)\n✓ diagnostics updated'],
-  workspace: ['Analysis complete', '▶ Chainvet: Analyze Workspace\n$ chainvet --hybrid ./contracts --json\n  frontend   17 Solidity files loaded\n  pipeline   detector + path + runtime evidence\n  surface    deduplicate & suppress low-signal\n✓ 12 findings surfaced\n✓ diagnostics updated\n✓ report cache updated'],
+  file:      ['Analysis complete', '▶ Chainvet: Analyze Current File\n$ chainvet --hybrid Reentrancy.sol --json\n  frontend   Solidity structure loaded\n  pipeline   static + path + fuzzing context\n  triage     merge duplicates and quiet noisy leads\n✓ 3 findings ready (1 high · 1 medium · 1 low)\n✓ diagnostics updated'],
+  workspace: ['Analysis complete', '▶ Chainvet: Analyze Workspace\n$ chainvet --hybrid ./contracts --json\n  frontend   17 Solidity files loaded\n  pipeline   static + path + fuzzing context\n  triage     merge duplicates and quiet noisy leads\n✓ 12 findings ready\n✓ diagnostics updated\n✓ report cache updated'],
   target:    ['Analysis complete', '▶ Chainvet: Analyze Selected File/Folder\n  target     /workspace/audit/contracts selected\n  frontend   Solidity structure loaded\n✓ hybrid analysis queued'],
   pdf:       ['Analysis complete', '▶ Chainvet: Generate PDF Report\n  source     using cached hybrid analysis\n  layout     cover · summary · findings · PoC\n✓ chainvet-hybrid-report.pdf ready'],
   md:        ['Analysis complete', '▶ Chainvet: Generate Markdown Report\n  source     using cached hybrid analysis\n✓ chainvet-hybrid-report.md ready'],
