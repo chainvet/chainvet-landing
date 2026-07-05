@@ -3621,10 +3621,10 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
 }
 .time-row {
   display: grid;
-  grid-template-columns: 86px minmax(90px, 1fr) 64px;
+  grid-template-columns: 138px minmax(90px, 1fr) 74px;
   align-items: center;
   gap: 10px;
-  min-height: 28px;
+  min-height: 38px;
   color: var(--muted);
   font-size: 11px;
 }
@@ -3633,6 +3633,17 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
   overflow: hidden;
   color: var(--text);
   font-weight: 800;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.time-row b small {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--subtle);
+  font: 9px/1.15 "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -3664,9 +3675,23 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
 .time-row.chainvet em {
   color: var(--green);
 }
+.time-row.chainvet b small {
+  color: rgba(166, 227, 161, .78);
+}
 .time-row.chainvet i {
   background: linear-gradient(90deg, var(--green), var(--teal));
   box-shadow: 0 0 16px rgba(166, 227, 161, .35);
+}
+.time-row.fastest b,
+.time-row.fastest em {
+  color: var(--blue);
+}
+.time-row.fastest b small {
+  color: rgba(137, 180, 250, .78);
+}
+.time-row.fastest i {
+  background: linear-gradient(90deg, var(--blue), var(--mauve));
+  box-shadow: 0 0 14px rgba(137, 180, 250, .28);
 }
 .time-note {
   grid-column: 1 / -1;

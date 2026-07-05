@@ -604,30 +604,27 @@ analysis continues</pre>
               <div class="time-board" aria-label="Average analysis time values from the benchmark comparison">
                 <div class="time-hero">
                   <span>Chainvet</span>
-                  <strong>7.8s</strong>
-                  <small>lowest average in this comparison</small>
+                  <strong>5.8s</strong>
+                  <small>hybrid engine · Rust · within 0.1s of the fastest listed baseline</small>
                 </div>
                 <div class="time-bars">
-                  <div class="time-row chainvet"><b>Chainvet</b><span><i style="--w: 18%"></i></span><em>7.8s</em></div>
-                  <div class="time-row"><b>Oyente</b><span><i style="--w: 25%"></i></span><em>13.2s</em></div>
-                  <div class="time-row"><b>Slither</b><span><i style="--w: 28%"></i></span><em>16.6s</em></div>
-                  <div class="time-row"><b>CSA</b><span><i style="--w: 29%"></i></span><em>17.5s</em></div>
-                  <div class="time-row"><b>Securify2</b><span><i style="--w: 43%"></i></span><em>49.7s</em></div>
-                  <div class="time-row"><b>Osiris</b><span><i style="--w: 44%"></i></span><em>51.7s</em></div>
-                  <div class="time-row"><b>Smartcheck</b><span><i style="--w: 55%"></i></span><em>112.7s</em></div>
-                  <div class="time-row"><b>Mythril</b><span><i style="--w: 78%"></i></span><em>579.0s</em></div>
-                  <div class="time-row"><b>Manticore</b><span><i style="--w: 100%"></i></span><em>1547.6s</em></div>
+                  <div class="time-row fastest"><b>Smartcheck<small>static analysis · Java</small></b><span><i style="--w: 12%"></i></span><em>5.7s</em></div>
+                  <div class="time-row chainvet"><b>Chainvet<small>hybrid engine · Rust</small></b><span><i style="--w: 12.3%"></i></span><em>5.8s</em></div>
+                  <div class="time-row"><b>Oyente [6]<small>mostly compilation errors · Python</small></b><span><i style="--w: 34%"></i></span><em>25.04s</em></div>
+                  <div class="time-row"><b>Slither [6]<small>static analysis · Python</small></b><span><i style="--w: 36%"></i></span><em>28.07s</em></div>
+                  <div class="time-row"><b>Mythril [6]<small>symbolic execution · Python</small></b><span><i style="--w: 92%"></i></span><em>1515.22s</em></div>
+                  <div class="time-row"><b>Manticore [6]<small>symbolic execution · Python</small></b><span><i style="--w: 100%"></i></span><em>2548.10s</em></div>
                 </div>
-                <p class="time-note">Bar lengths use a compressed scale so slower tools remain visible in one panel.</p>
+                <p class="time-note">Bar lengths use a compressed scale so fast hybrid/static tools and much slower symbolic tools can fit in one panel.</p>
               </div>
             </div>
             <div class="section-copy slide-text comparison-copy">
               <p class="eyebrow">Rust workflow</p>
-              <h3>Average-time results support the Rust-first design.</h3>
-              <p>In the benchmark comparison you shared, Chainvet records a 7.8 second average analysis time, ahead of the listed baseline tools. That makes performance a clear strength to present, while still framing the result as dataset-specific.</p>
+              <h3>Average-time results support the Rust-first hybrid design.</h3>
+              <p>In the updated benchmark comparison, Chainvet records a 5.8 second average analysis time. Smartcheck is marginally faster at 5.7s, but Chainvet stays in the same speed band while running a hybrid workflow instead of a purely static one.</p>
               <div class="compare-block refined">
-                <div class="market-side"><b>Baseline spread</b><span>The compared tools range from 13.2s to 1547.6s average analysis time in the table.</span></div>
-                <div class="chainvet-side"><b>Chainvet result</b><span>Chainvet is shown at 7.8s, reinforcing the Rust implementation and staged hybrid workflow as a strong product point.</span></div>
+                <div class="market-side"><b>Baseline spread</b><span>The listed baselines range from 5.7s for Smartcheck to 2548.10s for Manticore in this run.</span></div>
+                <div class="chainvet-side"><b>Chainvet result</b><span>Chainvet is shown at 5.8s, which keeps the Rust hybrid engine close to the fastest listed static baseline.</span></div>
               </div>
             </div>
           </div>
