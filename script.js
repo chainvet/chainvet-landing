@@ -560,15 +560,28 @@ pipelineTabs?.addEventListener('click', (event) => {
   renderPipelineStage(tab);
 });
 
+const reportPdfBase = 'assets/chainvet-sample-report.pdf';
 const reportButtons = document.querySelectorAll('[data-pdf-page]');
+
+function reportPdfUrl(page) {
+  return `${reportPdfBase}?jump=${encodeURIComponent(page)}&t=${Date.now()}#page=${encodeURIComponent(page)}&view=FitH&toolbar=0`;
+}
+
 reportButtons.forEach((button) => {
   button.addEventListener('click', () => {
-    const pdf = document.querySelector('.pdf-frame');
+    const reportSection = button.closest('.report-section');
+    const pdf = reportSection?.querySelector('.pdf-frame');
+    const openLink = reportSection?.querySelector('.pdf-device-top a');
     const page = button.dataset.pdfPage || '1';
+
     if (pdf) {
-      pdf.src = 'assets/chainvet-sample-report.pdf#page=' + page + '&view=FitH&toolbar=0';
-      pdf.focus();
+      pdf.src = reportPdfUrl(page);
+      pdf.focus({ preventScroll: true });
     }
+    if (openLink) {
+      openLink.href = `${reportPdfBase}#page=${encodeURIComponent(page)}&view=FitH`;
+    }
+
     reportButtons.forEach((item) => item.classList.toggle('active', item === button));
   });
 });
