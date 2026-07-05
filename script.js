@@ -700,7 +700,7 @@ updateVscodeDetail('12');
 const actionText = {
   file:      ['Analysis complete', '▶ Chainvet: Analyze Current File\n$ chainvet --hybrid Reentrancy.sol --json\n  frontend   Solidity structure loaded\n  pipeline   detector + path + runtime evidence\n  surface    deduplicate & suppress low-signal\n✓ 3 findings surfaced (1 high · 1 medium · 1 low)\n✓ diagnostics updated'],
   workspace: ['Analysis complete', '▶ Chainvet: Analyze Workspace\n$ chainvet --hybrid ./contracts --json\n  frontend   17 Solidity files loaded\n  pipeline   detector + path + runtime evidence\n  surface    deduplicate & suppress low-signal\n✓ 12 findings surfaced\n✓ diagnostics updated\n✓ report cache updated'],
-  target:    ['Analysis complete', '▶ Chainvet: Analyze Selected File/Folder\n  target     /home/anan/project/contracts selected\n  frontend   Solidity structure loaded\n✓ hybrid analysis queued'],
+  target:    ['Analysis complete', '▶ Chainvet: Analyze Selected File/Folder\n  target     /workspace/audit/contracts selected\n  frontend   Solidity structure loaded\n✓ hybrid analysis queued'],
   pdf:       ['Analysis complete', '▶ Chainvet: Generate PDF Report\n  source     using cached hybrid analysis\n  layout     cover · summary · findings · PoC\n✓ chainvet-hybrid-report.pdf ready'],
   md:        ['Analysis complete', '▶ Chainvet: Generate Markdown Report\n  source     using cached hybrid analysis\n✓ chainvet-hybrid-report.md ready'],
   refresh:   ['Analysis complete', '↻ Chainvet: Refresh Findings View\n✓ sidebar tree refreshed']
