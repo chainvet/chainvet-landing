@@ -30,9 +30,164 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
       menuToggle?.setAttribute('aria-expanded', 'false');
     }
     
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    guidedScrollTo(target, { userInitiated: true });
   });
 });
+
+/* ── Desktop guided section paging ─────────────────────────────────── */
+const guidedSections = Array.from(document.querySelectorAll('.hero, main > .section, main > .final-cta'));
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let guidedScrollLocked = false;
+let guidedWheelIntent = 0;
+let guidedWheelTimer = 0;
+let guidedScrollFrame = 0;
+
+const guidedInteractiveSelector = [
+  '.interfaces-slider',
+  '.interface-tabs',
+  '.browser-window',
+  '.webui-replica',
+  '.vscode-window',
+  '.terminal-window',
+  '.comparison-slider',
+  '.comp-panel',
+  '.pipeline-shell',
+  '.cicd-visual',
+  '.pdf-device',
+  '.report-scroll',
+  '.hero-console',
+  'button',
+  'a',
+  'input',
+  'textarea',
+  'select'
+].join(',');
+
+function guidedPagingEnabled() {
+  return guidedSections.length > 1 && !isCompactViewport() && !reduceMotion.matches;
+}
+
+function guidedEase(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function guidedSectionTop(section) {
+  return Math.max(0, Math.round(section.getBoundingClientRect().top + window.scrollY));
+}
+
+function guidedScrollTo(target, options = {}) {
+  if (!target) return;
+
+  if (!guidedPagingEnabled() || options.userInitiated) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+
+  window.cancelAnimationFrame(guidedScrollFrame);
+  const start = window.scrollY;
+  const destination = guidedSectionTop(target);
+  const distance = destination - start;
+  const duration = options.duration ?? 560;
+  const startedAt = performance.now();
+
+  document.documentElement.classList.add('guided-scroll-active');
+
+  function step(now) {
+    const progress = Math.min(1, (now - startedAt) / duration);
+    const eased = guidedEase(progress);
+    window.scrollTo(0, Math.round(start + distance * eased));
+
+    if (progress < 1) {
+      guidedScrollFrame = window.requestAnimationFrame(step);
+      return;
+    }
+
+    window.scrollTo(0, destination);
+    window.setTimeout(() => {
+      document.documentElement.classList.remove('guided-scroll-active');
+    }, 80);
+  }
+
+  guidedScrollFrame = window.requestAnimationFrame(step);
+}
+
+function guidedActiveIndex() {
+  if (!guidedSections.length) return -1;
+  const anchor = window.innerHeight * 0.38;
+  let bestIndex = 0;
+  let bestDistance = Infinity;
+
+  guidedSections.forEach((section, index) => {
+    const rect = section.getBoundingClientRect();
+    const distance = Math.abs(rect.top - anchor);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestIndex = index;
+    }
+  });
+
+  return bestIndex;
+}
+
+function guidedCanScrollWithin(target, deltaY) {
+  let node = target instanceof Element ? target : target?.parentElement;
+
+  while (node && node !== document.body && node !== document.documentElement) {
+    const style = window.getComputedStyle(node);
+    const scrollable = /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 2;
+
+    if (scrollable) {
+      const atTop = node.scrollTop <= 1;
+      const atBottom = node.scrollTop + node.clientHeight >= node.scrollHeight - 1;
+      if ((deltaY < 0 && !atTop) || (deltaY > 0 && !atBottom)) return true;
+    }
+
+    node = node.parentElement;
+  }
+
+  return false;
+}
+
+function guidedEventElement(event) {
+  return document.elementFromPoint(event.clientX, event.clientY);
+}
+
+function guidedInsideInteractiveSurface(event) {
+  const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+  const pointElement = guidedEventElement(event);
+  return Boolean(target?.closest(guidedInteractiveSelector) || pointElement?.closest(guidedInteractiveSelector));
+}
+
+function guidedCanScrollFromEvent(event) {
+  const pointElement = guidedEventElement(event);
+  return guidedCanScrollWithin(event.target, event.deltaY)
+    || (pointElement !== event.target && guidedCanScrollWithin(pointElement, event.deltaY));
+}
+
+window.addEventListener('wheel', (event) => {
+  if (!guidedPagingEnabled()) return;
+  if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+  if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+  if (guidedInsideInteractiveSurface(event)) return;
+  if (guidedCanScrollFromEvent(event)) return;
+
+  const current = guidedActiveIndex();
+  const direction = event.deltaY > 0 ? 1 : -1;
+  const next = Math.max(0, Math.min(guidedSections.length - 1, current + direction));
+  if (next === current) return;
+
+  event.preventDefault();
+  guidedWheelIntent += event.deltaY;
+  window.clearTimeout(guidedWheelTimer);
+  guidedWheelTimer = window.setTimeout(() => { guidedWheelIntent = 0; }, 180);
+
+  if (guidedScrollLocked || Math.abs(guidedWheelIntent) < 58) return;
+
+  guidedWheelIntent = 0;
+  guidedScrollLocked = true;
+  guidedScrollTo(guidedSections[next], { duration: 560 });
+  window.setTimeout(() => { guidedScrollLocked = false; }, 650);
+}, { passive: false });
 
 const mobileAdvisory = document.querySelector('#mobile-advisory');
 const mobileAdvisoryClose = document.querySelector('[data-mobile-advisory-close]');
