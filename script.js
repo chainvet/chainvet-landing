@@ -30,12 +30,7 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
       menuToggle?.setAttribute('aria-expanded', 'false');
     }
     
-    if (isCompactViewport()) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      return;
-    }
-
-    scrollToPageTarget(target, 620);
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
 
@@ -72,181 +67,6 @@ window.addEventListener('keydown', (event) => {
 });
 window.addEventListener('load', showMobileAdvisory);
 
-
-/* ── Section wheel paging ──────────────────────────────────────────── */
-const pageSections = Array.from(document.querySelectorAll('.hero, main > .section, main > .final-cta'));
-let sectionPagingLocked = false;
-let wheelIntent = 0;
-let wheelIntentTimer = 0;
-let activeSectionScroll = 0;
-
-function canScrollWithin(target, deltaY) {
-  let node = target instanceof Element ? target : target?.parentElement;
-  while (node && node !== document.body && node !== document.documentElement) {
-    const style = window.getComputedStyle(node);
-    const overflowY = style.overflowY;
-    const scrollable = /(auto|scroll)/.test(overflowY) && node.scrollHeight > node.clientHeight + 2;
-    if (scrollable) {
-      const atTop = node.scrollTop <= 1;
-      const atBottom = node.scrollTop + node.clientHeight >= node.scrollHeight - 1;
-      if ((deltaY < 0 && !atTop) || (deltaY > 0 && !atBottom)) return true;
-    }
-    node = node.parentElement;
-  }
-  return false;
-}
-
-const mockupSurfaceSelector = [
-  '.interfaces-slider',
-  '.webui-replica',
-  '.vscode-window',
-  '.terminal-window',
-  '.comparison-slider',
-  '.comp-panel',
-  '.pipeline-shell',
-  '.cicd-visual',
-  '.pdf-device',
-  '.hero-console'
-].join(',');
-
-function closestMockupSurface(target) {
-  const node = target instanceof Element ? target : target?.parentElement;
-  return node?.closest(mockupSurfaceSelector) ?? null;
-}
-
-function eventPointElement(event) {
-  return document.elementFromPoint(event.clientX, event.clientY);
-}
-
-function mockupSurfaceFromEvent(event) {
-  return closestMockupSurface(event.target)
-    || closestMockupSurface(eventPointElement(event));
-}
-
-function canScrollWithinEvent(event) {
-  const pointElement = eventPointElement(event);
-  return canScrollWithin(event.target, event.deltaY)
-    || (pointElement !== event.target && canScrollWithin(pointElement, event.deltaY));
-}
-
-function activePageIndex() {
-  if (!pageSections.length) return -1;
-  const anchor = window.innerHeight * 0.42;
-  let bestIndex = 0;
-  let bestDistance = Infinity;
-  pageSections.forEach((section, index) => {
-    const rect = section.getBoundingClientRect();
-    const centerDistance = Math.abs((rect.top + Math.min(rect.height, window.innerHeight) * 0.42) - anchor);
-    if (centerDistance < bestDistance) {
-      bestDistance = centerDistance;
-      bestIndex = index;
-    }
-  });
-  return bestIndex;
-}
-
-function sectionEase(t) {
-  return 1 - Math.pow(1 - t, 3);
-}
-
-function sectionTop(target) {
-  return Math.max(0, Math.round(target.getBoundingClientRect().top + window.scrollY));
-}
-
-function scrollToPageTarget(target, duration = 680) {
-  if (!target) return;
-  window.cancelAnimationFrame(activeSectionScroll);
-
-  const start = window.scrollY;
-  const destination = sectionTop(target);
-  const distance = destination - start;
-  const startedAt = performance.now();
-
-  document.documentElement.classList.add('section-paging');
-
-  function step(now) {
-    const elapsed = now - startedAt;
-    const progress = Math.min(1, elapsed / duration);
-    const eased = sectionEase(progress);
-    window.scrollTo(0, Math.round(start + distance * eased));
-
-    if (progress < 1) {
-      activeSectionScroll = window.requestAnimationFrame(step);
-      return;
-    }
-
-    window.scrollTo(0, destination);
-    if (target.classList.contains('zoom-section')) {
-      target.style.setProperty('--zoom', '1');
-      target.style.setProperty('--zoom-opacity', '1');
-    }
-    window.requestAnimationFrame(() => window.scrollTo(0, destination));
-    window.setTimeout(() => {
-      document.documentElement.classList.remove('section-paging');
-    }, 80);
-  }
-
-  activeSectionScroll = window.requestAnimationFrame(step);
-}
-
-function pageToSection(index) {
-  const target = pageSections[index];
-  if (!target) return;
-  sectionPagingLocked = true;
-  scrollToPageTarget(target, 680);
-  window.setTimeout(() => {
-    sectionPagingLocked = false;
-  }, 760);
-}
-
-window.addEventListener('wheel', (event) => {
-  if (isCompactViewport()) return;
-  if (event.ctrlKey || event.metaKey || event.shiftKey) return;
-  if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
-  if (!mockupSurfaceFromEvent(event)) return;
-  if (canScrollWithinEvent(event)) return;
-
-  event.preventDefault();
-  wheelIntent = 0;
-  window.clearTimeout(wheelIntentTimer);
-}, { passive: false, capture: true });
-
-window.addEventListener('wheel', (event) => {
-  if (isCompactViewport()) return;
-  if (!pageSections.length) return;
-  if (event.ctrlKey || event.metaKey || event.shiftKey) return;
-  if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
-
-  const mockupSurface = mockupSurfaceFromEvent(event);
-  if (mockupSurface) {
-    if (canScrollWithinEvent(event)) return;
-
-    event.preventDefault();
-    wheelIntent = 0;
-    window.clearTimeout(wheelIntentTimer);
-    return;
-  }
-
-  if (canScrollWithinEvent(event)) return;
-
-  const current = activePageIndex();
-  const instantDirection = event.deltaY > 0 ? 1 : -1;
-  const canPage = (instantDirection > 0 && current < pageSections.length - 1) || (instantDirection < 0 && current > 0);
-  if (!canPage) return;
-
-  event.preventDefault();
-  wheelIntent += event.deltaY;
-  window.clearTimeout(wheelIntentTimer);
-  wheelIntentTimer = window.setTimeout(() => { wheelIntent = 0; }, 160);
-
-  if (sectionPagingLocked || Math.abs(wheelIntent) < 48) return;
-
-  const direction = wheelIntent > 0 ? 1 : -1;
-  const next = Math.max(0, Math.min(pageSections.length - 1, current + direction));
-
-  wheelIntent = 0;
-  pageToSection(next);
-}, { passive: false });
 
 /* ── Interactive Auditing Network Canvas ─────────────────────────────── */
 const canvas = document.getElementById('hero-canvas');
@@ -409,93 +229,17 @@ if (canvas && heroSection) {
   animate();
 }
 
-const zoomSections = document.querySelectorAll('.section, .final-cta');
-zoomSections.forEach((el) => el.classList.add('zoom-section'));
 
-// Track which sections have had their .reveal children triggered
-const revealedSections = new WeakSet();
-
-function smoothstep(t) {
-  t = Math.max(0, Math.min(1, t));
-  return t * t * (3 - 2 * t);
-}
-
-function revealCompactSections() {
-  zoomSections.forEach((el) => {
-    el.style.setProperty('--zoom', '1');
-    el.style.setProperty('--zoom-opacity', '1');
-    el.querySelectorAll('.reveal').forEach((child) => child.classList.add('visible'));
-    if (el.classList.contains('reveal')) el.classList.add('visible');
-  });
-}
-
-let compactSectionsRevealed = false;
-
-function updateZoom() {
-  if (isCompactViewport()) {
-    if (!compactSectionsRevealed) {
-      revealCompactSections();
-      compactSectionsRevealed = true;
-    }
-    window.setTimeout(updateZoom, 300);
-    return;
-  }
-
-  compactSectionsRevealed = false;
-  const vh = window.innerHeight;
-
-  zoomSections.forEach((el) => {
-    // Skip the hero — it's always fully visible
-    if (el.classList.contains('hero')) return;
-
-    const rect = el.getBoundingClientRect();
-    const elHeight = rect.height || 1;
-
-    // How far the element's top has entered from the bottom of the viewport
-    //   0 = element top is at or below viewport bottom
-    //   1 = element top has reached the top of the viewport
-    const enterProgress = (vh - rect.top) / vh;
-
-    // How much of the element is visible (for very tall sections)
-    const visiblePortion = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0)) / elHeight;
-
-    // Combine: use enterProgress mainly, boosted by visiblePortion for tall sections
-    const raw = Math.max(enterProgress, visiblePortion);
-
-    // Map to 0→1 range: starts zooming when 10% entered, fully zoomed at 50% entered
-    const t = smoothstep(Math.max(0, Math.min(1, (raw - 0.1) / 0.4)));
-
-    const scale = 0.88 + t * 0.12;
-    const opacity = t;
-
-    el.style.setProperty('--zoom', scale);
-    el.style.setProperty('--zoom-opacity', opacity);
-
-    // Trigger child .reveal elements once section is sufficiently visible
-    if (t > 0.3 && !revealedSections.has(el)) {
-      revealedSections.add(el);
-      el.querySelectorAll('.reveal').forEach((child) => child.classList.add('visible'));
-      if (el.classList.contains('reveal')) el.classList.add('visible');
-    }
-  });
-
-  requestAnimationFrame(updateZoom);
-}
-
-// Start the loop
-requestAnimationFrame(updateZoom);
-
-// Still observe standalone .reveal elements not inside zoom-sections
-const revealObserver = new IntersectionObserver((entries) => {
+const revealObserver = new IntersectionObserver((entries, observer) => {
   entries.forEach((entry) => {
-    if (entry.isIntersecting) entry.target.classList.add('visible');
+    if (!entry.isIntersecting) return;
+    entry.target.classList.add('visible');
+    observer.unobserve(entry.target);
   });
-}, { threshold: 0.14 });
-document.querySelectorAll('.reveal').forEach((node) => {
-  if (!node.closest('.zoom-section')) {
-    revealObserver.observe(node);
-  }
-});
+}, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+
+document.querySelectorAll('.reveal').forEach((node) => revealObserver.observe(node));
+
 
 const stages = {
   static: {
