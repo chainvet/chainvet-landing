@@ -30,6 +30,7 @@
         <a href="#pipeline">Pipeline</a>
         <a href="#cicd">CI/CD</a>
         <a href="#reports">Reports</a>
+        <a href="https://docs.chainvet.dev/">Docs</a>
       </nav>
       <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
         <span class="hamburger-bar"></span>
@@ -68,6 +69,7 @@
               <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" style="margin-left: 8px;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
             </a>
             <a class="button secondary" href="#reports">View sample report</a>
+            <a class="button secondary" href="https://docs.chainvet.dev/">Read docs</a>
           </div>
         </div>
         <aside class="hero-console reveal" aria-label="Chainvet terminal preview">
@@ -76,6 +78,7 @@
             <div class="console-tabs">
               <button class="console-tab active" type="button" data-console="install">install</button>
               <button class="console-tab" type="button" data-console="run">run</button>
+              <button class="console-tab" type="button" data-console="skill">agent skill</button>
             </div>
             <button class="console-copy" type="button" title="Copy to clipboard" aria-label="Copy command">
               <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M4 4v9h9V4H4Zm8 8H5V5h7v7ZM2 2h9v1H3v8H2V2Z"/></svg>
@@ -89,6 +92,10 @@
             <p><b>frontend</b> Solidity structure loaded</p>
             <p><b>pipeline</b> static + path + fuzzing context</p>
             <p><b>report</b> PDF and Markdown ready</p>
+          </div>
+          <div class="console-body" id="console-skill" style="display:none">
+            <p><em>$</em> npx skills add chainvet/chainvet-skills --skill chainvet-scan</p>
+            <p><b>agent</b> adds the Chainvet scan workflow to compatible coding agents</p>
           </div>
         </aside>
         <div class="hero-strip" aria-label="Chainvet highlights">
@@ -523,6 +530,7 @@ Findings (4)
                 <li>Scan one Solidity file or an entire project directory.</li>
                 <li>Use pretty terminal output for humans or JSON for automation.</li>
                 <li>Set severity filters and time caps from scripts or CI jobs.</li>
+                <li>Add the Chainvet scan skill to compatible coding agents with <code>npx skills add</code>.</li>
               </ul>
             </div>
           </div>
@@ -807,7 +815,7 @@ queue     leads for deeper checks</code></pre>
 
     <footer class="site-footer">
       <span>Chainvet · Hybrid smart contract audits</span>
-      <a href="mailto:hello@chainvet.dev">hello@chainvet.dev</a>
+      <span class="footer-links"><a href="https://docs.chainvet.dev/">Docs</a><a href="mailto:hello@chainvet.dev">hello@chainvet.dev</a></span>
     </footer>
     <script src="script.js"></script>
   </body>
